@@ -47,7 +47,7 @@ def parse_DBLP_file(callback,start_paper,count_to):
         print("Error: Start paper is greater then or equal to end paper. Adjust so that start paper is less then the end paper.")
         sys.stdout.flush()
 
-    with open('dblp.xml', 'rt', encoding='utf-8') as gz_file:
+    with gzip.open('../../../mnt/large_data/dblp-2023-05-11.xml.gz', 'rt', encoding='utf-8') as gz_file:
         count_line = 0
         pap = []
         i = 0
