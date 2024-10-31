@@ -1,2 +1,9 @@
 Papers.txt.gz
 dblp.xml
+dblp_to_mag_matched.csv
+total_citeseer_to_dblp.csv
+total_citeseer_to_mag.csv
+csx_db_7_15_2014_authors.sql.gz
+csx_db_7_15_2014_paperVersions.sql.gz
+csx_db_7_15_2014_papers.sql.gz
+create_tables.sql

@@ -1,9 +1,6 @@
 counter = 0
-global paper_docs 
-paper_docs = []
 
-def populate_dblp_mongo(paper, collection_name, papers_collection):
-    global paper_docs
+def populate_dblp_mongo(paper, paper_docs):
     global counter
     
     # Paper document that has attributes that every paper needs to be associated with
