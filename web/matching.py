@@ -1,6 +1,10 @@
 import networkx as nx
 from pymongo import MongoClient
 
+'''
+File is used as a simple matching script to cross refrence paper in MongoDB.
+'''
+
 #Setup MongoDB connection
 client = MongoClient('mongodb://localhost:27017/')
 db = client['theAdvisor']
