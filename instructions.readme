@@ -1,0 +1,19 @@
+Instructions to push theAdvisor data to MongoDB.
+1. Located in CiteseerDumpTables run the create_scehma.sql file.
+        * This will create an authors, papers, paperVersions, and citations table.
+2. Run the csx_db_7_15_2014_authors.sql, csx_db_7_15_2014_papers.sql, csx_db_7_15_2014_paperVersions.sql, and csx_db_7_15_2014_citations.sql.gz
+3. From there execute mysqlmongo.py to move over each table from MySQL to a MongoDB collection.
+4. Push DBLP and MAG from the originalfiles_script.py
+        * Note make sure that parse.py and callback.py are in the same directory level as it uses functions from those scripts.
+5. Push the matched files to MongoDB (DBLP->MAG and DBLP->Citeseer)
+        * DBLP->MAG: Exectute matchedfiles_script.py, make sure dblp_to_mag_matched.csv is in the same directory.
+        * DBLP->Citeseer: Exectute matchedfiles_script.py, make sure total_citeseer_to_dblp.csv is in the same directory.
+6. Perform the matching within Citeseer to add an array of authors and an array of citations for each paper.
+        * Use the citeseer_merge.py to add authors and citations array to each respective paper.
+        * Change citeseer_collection variable to the collection you want to match (author or citations)
+        * citations
+                * When merging the citations make sure that fetch_specific_fields is set to true to only get the paperid's of the matches else set it to false.
+                * For citations set both papers_collection_match_field and citeseer_collection_match_field set to 'cluster'.
+        * authors
+                * When merging the authors collection make sure to set set_specific_fields equal to false. 
+                * For authors set papers_collection_match_field to 'id' and citeseer_collection_match_field set to 'paperid'.
