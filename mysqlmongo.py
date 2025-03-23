@@ -1,21 +1,25 @@
 import pandas as pd
 from sqlalchemy import create_engine
 from pymongo import MongoClient
+import os
 
 # MySQL connection configuration
-mysql_username = ''
-mysql_password = ''
-mysql_database = 'theAdvisor'
+mysql_username = os.getenv('MYSQL_USER') or ''
+mysql_password = os.getenv('MYSQL_PASSWORD') or ''
+mysql_database = os.getenv('MYSQL_DATABASE') or 'theAdvisor'
 
 # Create a SQLAlchemy engine for MySQL
 mysql_engine = create_engine(f'mysql+pymysql://{mysql_username}:{mysql_password}@localhost/{mysql_database}')
 
 # MongoDB connection configuration
 mongo_client = MongoClient('mongodb://localhost:27017/')
-mongo_db = mongo_client['theAdvisor']
+mongo_database = os.getenv('MONGO_DATABASE') or 'theAdvisor'
+mongo_db = mongo_client[mongo_database]
 
 # List of tables to export and import
-tables = ['citations']
+#tables = ['citations']
+tables = ['authors']
+mongo_collection_suffix = '_Citeseer'
 
 # Batch size
 batch_size = 20000
@@ -24,7 +28,9 @@ batch_size = 20000
 for table in tables:
     try:
         # Read the data in chunks from MySQL
-        total = 50900000
+        total = 0
+
+        mongo_collection = table + mongo_collection_suffix
         
         while True:
             # Use the SQLAlchemy engine to read the data
@@ -37,7 +43,7 @@ for table in tables:
             records = df.to_dict(orient='records')
 
             # Insert records into MongoDB
-            mongo_db[table].insert_many(records)
+            mongo_db[mongo_collection].insert_many(records)
             print(f'Successfully imported {len(records)} records from {table} total: {total}')
 
             total += batch_size

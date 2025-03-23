@@ -1,6 +1,7 @@
 import pandas as pd
 from sqlalchemy import create_engine
 from pymongo import MongoClient
+import os
 
 mysql_username = 'root'
 mysql_password = 'Hurricanes99'

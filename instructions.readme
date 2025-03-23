@@ -1,5 +1,6 @@
 Instructions to push theAdvisor data to MongoDB.
 
+
 ## Upload citeseer raw data
 
 check instructions in `mysql_stuff.md`
@@ -9,6 +10,14 @@ check instructions in `mysql_stuff.md`
 2. Run the csx_db_7_15_2014_authors.sql, csx_db_7_15_2014_papers.sql, csx_db_7_15_2014_paperVersions.sql, and csx_db_7_15_2014_citations.sql.gz
   *these are generated from `extractTable.py`
 3. From there execute mysqlmongo.py to move over each table from MySQL to a MongoDB collection.
+
+some python packages needed:
+
+```
+pip3 install pandas sqlalchemy pymongo pymysql
+```
+
+in the csd 2014datafile; authors is 12M tuples. papers is 4M tuples; paperVersions is 2.4M tuples; citations is 86M tuples;
 
 ## Push DBLP and MAG from the originalfiles_script.py
         * Note make sure that parse.py and callback.py are in the same directory level as it uses functions from those scripts.
