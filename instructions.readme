@@ -19,7 +19,11 @@ pip3 install pandas sqlalchemy pymongo pymysql
 
 in the csx_2014 datafile; authors is 12M tuples. papers is 4M tuples; paperVersions is 2.4M tuples; citations is 86M tuples;
 
-## Push DBLP and MAG from the originalfiles_script.py
+## Push DBLP and MAG
+
+For DBLP run `DBLP_to_mongo.py`
+For MAG run `MAG_to_mongo.py`
+
         * Note make sure that parse.py and callback.py are in the same directory level as it uses functions from those scripts.
 
 
