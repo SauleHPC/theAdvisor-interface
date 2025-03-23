@@ -1,14 +1,22 @@
 Instructions to push theAdvisor data to MongoDB.
+
+## Upload citeseer raw data
+
 1. Located in CiteseerDumpTables run the `create_schema.sql` file.
         * This will create an authors, papers, paperVersions, and citations table.
 2. Run the csx_db_7_15_2014_authors.sql, csx_db_7_15_2014_papers.sql, csx_db_7_15_2014_paperVersions.sql, and csx_db_7_15_2014_citations.sql.gz
+  *these are generated from `extractTable.py`
 3. From there execute mysqlmongo.py to move over each table from MySQL to a MongoDB collection.
-4. Push DBLP and MAG from the originalfiles_script.py
+
+## Push DBLP and MAG from the originalfiles_script.py
         * Note make sure that parse.py and callback.py are in the same directory level as it uses functions from those scripts.
-5. Push the matched files to MongoDB (DBLP->MAG and DBLP->Citeseer)
+
+
+## Push the matched files to MongoDB (DBLP->MAG and DBLP->Citeseer)
         * DBLP->MAG: Exectute matchedfiles_script.py, make sure dblp_to_mag_matched.csv is in the same directory.
         * DBLP->Citeseer: Exectute matchedfiles_script.py, make sure total_citeseer_to_dblp.csv is in the same directory.
-6. Perform the matching within Citeseer to add an array of authors and an array of citations for each paper.
+	
+## Perform the matching within Citeseer to add an array of authors and an array of citations for each paper.
         * Use the citeseer_merge.py to add authors and citations array to each respective paper.
         * Change citeseer_collection variable to the collection you want to match (author or citations)
         * citations
