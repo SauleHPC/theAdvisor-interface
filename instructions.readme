@@ -1,5 +1,5 @@
 Instructions to push theAdvisor data to MongoDB.
-1. Located in CiteseerDumpTables run the create_scehma.sql file.
+1. Located in CiteseerDumpTables run the `create_schema.sql` file.
         * This will create an authors, papers, paperVersions, and citations table.
 2. Run the csx_db_7_15_2014_authors.sql, csx_db_7_15_2014_papers.sql, csx_db_7_15_2014_paperVersions.sql, and csx_db_7_15_2014_citations.sql.gz
 3. From there execute mysqlmongo.py to move over each table from MySQL to a MongoDB collection.
