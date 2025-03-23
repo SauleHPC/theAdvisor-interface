@@ -1,6 +1,8 @@
 import gzip
+import sys
 
-def extract_tables(sql_file, tables):
+# prefix is where teh file will be writte: {prefix}_{table}.sql.gz
+def extract_tables(sql_file, tables, prefix):
     encodings_to_try = ['utf-8']
     current_table = None
 
@@ -30,12 +32,25 @@ def extract_tables(sql_file, tables):
         print("Failed to detect encoding or decode file.")
         return
 
-def write_line(table, line):
-    file_name = f'csx_db_7_15_2014_{table}.sql.gz'
+def write_line(table, line, prefix = 'csx_db_7_15_2014'):
+    file_name = f'{prefix}_{table}.sql.gz'
     with gzip.open(file_name, 'at', encoding='utf-8') as f:
         f.write(line)
 
+def usage ():
+    pritn("Usage: python3 extractTable.py [sql_file] [prefix_output]")
+    sys.exit(-1)
+        
 sql_file = '../../../mnt/large_data/csx_db_7_15_2014.sql.gz'
 tables_to_extract = ['citations']
+prefix = 'csx_db_7_15_2014'
 
-extract_tables(sql_file, tables_to_extract)
+if len(sys.argv) > 1:
+    if sys.argv[1] == '--help':
+        usage()
+    sql_file = sys.argv[1]
+if len(sys.argv) > 2:
+    prefix = sys.argv[2]
+
+    
+extract_tables(sql_file, tables_to_extract, prefix)
