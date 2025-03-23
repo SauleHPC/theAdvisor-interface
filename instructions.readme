@@ -19,6 +19,8 @@ pip3 install pandas sqlalchemy pymongo pymysql
 
 in the csx_2014 datafile; authors is 12M tuples. papers is 4M tuples; paperVersions is 2.4M tuples; citations is 86M tuples;
 
+pushing citation upstream should take about 10 hours... :(
+
 ## Push DBLP and MAG
 
 For DBLP run `DBLP_to_mongo.py`
