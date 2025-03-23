@@ -1,8 +1,8 @@
 import gzip
 import sys
 
-# prefix is where the files will be writte: {prefix}_{table}.sql.gz
-def extract_tables(sql_file, tables, prefix):
+# prefix is where the files will be written: {prefix}_{table}.sql.gz
+def extract_tables(sql_file: str, tables: list[str], prefix: str) -> None:
     encodings_to_try = ['utf-8']
     current_table = None
 
@@ -38,8 +38,8 @@ def usage ():
     print("Usage: python3 extractTable.py [sql_file] [prefix_output]")
     sys.exit(-1)
 
-
-        
+## MAIN
+    
 sql_file = '../../../mnt/large_data/csx_db_7_15_2014.sql.gz'
 #tables_to_extract = ['citations']
 tables_to_extract = ['citations', 'authors', 'papers', 'paperVersions' ]
