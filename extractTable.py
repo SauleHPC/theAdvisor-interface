@@ -1,6 +1,7 @@
 import gzip
 import sys
 
+# prefix is where the files will be writte: {prefix}_{table}.sql.gz
 def extract_tables(sql_file, tables, prefix):
     encodings_to_try = ['utf-8']
     current_table = None
@@ -38,6 +39,7 @@ def usage ():
     sys.exit(-1)
 
 
+        
 sql_file = '../../../mnt/large_data/csx_db_7_15_2014.sql.gz'
 #tables_to_extract = ['citations']
 tables_to_extract = ['citations', 'authors', 'papers', 'paperVersions' ]
@@ -47,7 +49,6 @@ if len(sys.argv) > 1:
     if sys.argv[1] == '--help':
         usage()
     sql_file = sys.argv[1]
-
 if len(sys.argv) > 2:
     prefix = sys.argv[2]
 
