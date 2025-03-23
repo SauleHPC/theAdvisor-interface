@@ -21,6 +21,7 @@ in the csx_2014 datafile; authors is 12M tuples. papers is 4M tuples; paperVersi
 
 pushing citation upstream should take about 10 hours... :(
 
+once you ahve the data in sql, you can extract the right file to pass for the matchign code `extract_citeseer_match_input_from_mysql.py`
 
 ### Perform the matching within Citeseer to add an array of authors and an array of citations for each paper.
         * Use the citeseer_merge.py to add authors and citations array to each respective paper.
