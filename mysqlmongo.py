@@ -18,8 +18,10 @@ mongo_db = mongo_client[mongo_database]
 
 # List of tables to export and import
 #tables = ['citations']
-tables = ['authors']
+#tables = ['authors']
+tables = ['papers', 'paperVersions', 'citations']
 mongo_collection_suffix = '_Citeseer'
+delete_collection_first = False
 
 # Batch size
 batch_size = 20000
@@ -32,6 +34,10 @@ for table in tables:
 
         mongo_collection = table + mongo_collection_suffix
         
+        if delete_collection_first:
+            result = mongo_db[mongo_collection].delete_many({})
+            print(f"Deleted {result.deleted_count} documents from {mongo_collection}.")
+
         while True:
             # Use the SQLAlchemy engine to read the data
             df = pd.read_sql(f'SELECT * FROM {table} LIMIT {batch_size} OFFSET {total}', con=mysql_engine)
@@ -44,7 +50,7 @@ for table in tables:
 
             # Insert records into MongoDB
             mongo_db[mongo_collection].insert_many(records)
-            print(f'Successfully imported {len(records)} records from {table} total: {total}')
+            print(f'Successfully imported {len(records)} records from {table} into {mongo_collection}. Total: {total}')
 
             total += batch_size
 
