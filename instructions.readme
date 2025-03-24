@@ -40,6 +40,8 @@ For MAG run `MAG_to_mongo.py`
 
         * Note make sure that parse.py and callback.py are in the same directory level as it uses functions from those scripts.
 
+Note that the path to the DBLP file is currently hardcoded in `parse.py`
+the MAG file is also currently hardcoded as `Papers.txt.gz`
 
 ## Push the matched files to MongoDB (DBLP->MAG and DBLP->Citeseer)
         * DBLP->MAG: Execute matchedfiles_script.py, make sure dblp_to_mag_matched.csv is in the same directory.

@@ -3,6 +3,7 @@ from callback import populate_dblp_mongo
 from pymongo import MongoClient
 import pandas as pd
 import gzip
+import os
 
 #DBLP
 #-----------------------------
