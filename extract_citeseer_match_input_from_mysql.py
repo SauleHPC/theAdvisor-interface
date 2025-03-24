@@ -2,6 +2,7 @@ import pandas as pd
 from sqlalchemy import create_engine
 import os
 import csv
+import gzip
 
 # MySQL connection configuration
 mysql_username = os.getenv('MYSQL_USER') or ''
@@ -18,7 +19,7 @@ table = 'papers'
 batch_size = 2000
 
 try:
-    with open('citeseer_data.csv', 'w', newline='') as outfile:
+    with gzip.open('citeseer_data.csv.gz', 'wt') as outfile:
         writer = csv.writer(outfile)
         # Read the data in chunks from MySQL
         total = 0
