@@ -44,6 +44,7 @@ Note that the path to the DBLP file is currently hardcoded in `parse.py`
 the MAG file is also currently hardcoded as `Papers.txt.gz`
 
 seems like importing DBLP is about 30 minutes
+seems like importing MAG is about an hour or so
 
 ## Push the matched files to MongoDB (DBLP->MAG and DBLP->Citeseer)
         * DBLP->MAG: Execute matchedfiles_script.py, make sure dblp_to_mag_matched.csv is in the same directory.
