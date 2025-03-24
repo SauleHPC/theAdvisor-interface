@@ -3,6 +3,7 @@ from callback import populate_dblp_mongo
 from pymongo import MongoClient
 import pandas as pd
 import gzip
+import os
 
 #MAG
 #-----------------------------------
@@ -30,3 +31,4 @@ with gzip.open(gz_file_path, 'rt', encoding='utf-8') as f:
         
         batch_counter += len(data)
 
+        print (batch_size)
