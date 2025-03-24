@@ -43,6 +43,7 @@ since values are being parsed using xml it is suggested to make sure that you pa
 def parse_DBLP_file(callback,start_paper,count_to):
     current_paper = None
     paper_title_arr = []
+    paper_docs = None
     if(start_paper>=count_to):
         print("Error: Start paper is greater then or equal to end paper. Adjust so that start paper is less then the end paper.")
         sys.stdout.flush()

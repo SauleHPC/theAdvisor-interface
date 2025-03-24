@@ -32,5 +32,6 @@ for i in range(0, 6800000, 50000):
     print("parsing DBLP")
     paper_docs = parse_DBLP_file(callbacks, i, i+50000)
 
-    papers_collection.insert_many(paper_docs)
+    if paper_docs is not None:    
+        papers_collection.insert_many(paper_docs)
 
