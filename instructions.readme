@@ -50,3 +50,10 @@ seems like importing MAG is about an hour or so
         * DBLP->MAG: Execute matchedfiles_script.py, make sure dblp_to_mag_matched.csv is in the same directory.
         * DBLP->Citeseer: Execute matchedfiles_script.py, make sure total_citeseer_to_dblp.csv is in the same directory.
 	
+
+
+## create indexes
+
+At some point we need to create indexes on all these mongo collections becasue the query time are stupid otherwise
+
+also once the SQL stuff is done, one could flush teh sql database
