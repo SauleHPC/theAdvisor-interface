@@ -51,3 +51,10 @@ seems like importing MAG is about an hour or so
 	  something like `python3 upload_matched_files.py DBLPtoMAG matchings/dblp_to_mag/*csv` 
         * DBLP->Citeseer: Execute `upload_matched_files.py`, see usage
 	
+
+
+## create indexes
+
+At some point we need to create indexes on all these mongo collections becasue the query time are stupid otherwise
+
+also once the SQL stuff is done, one could flush teh sql database
