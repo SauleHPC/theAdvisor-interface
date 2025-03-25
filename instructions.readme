@@ -48,5 +48,6 @@ seems like importing MAG is about an hour or so
 
 ## Push the matched files to MongoDB (DBLP->MAG and DBLP->Citeseer)
         * DBLP->MAG: Execute `upload_matched_files.py`, see usage
+	  something like `python3 upload_matched_files.py DBLPtoMAG matchings/dblp_to_mag/*csv` 
         * DBLP->Citeseer: Execute `upload_matched_files.py`, see usage
 	
