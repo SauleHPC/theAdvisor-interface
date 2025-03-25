@@ -1,6 +1,7 @@
 import networkx as nx
 from pymongo import MongoClient
 import os
+import sys
 
 '''
 File is used as a simple matching script to cross refrence paper in MongoDB.
@@ -60,6 +61,8 @@ def make_matching_graph():
 
         if mag_node_name(mag_id) not in G.nodes:
             G.add_node(mag_node_name(mag_id), data = mag_node_data(mag_id))
+        if dblp_node_name(dblp_id) not in G.nodes: #shouldn't happen unless files are out of sync
+            G.add_node(dblp_node_name(dblp_id), data = dblp_node_data(dblp_id))
         G.add_edge(dblp_node_name(dblp_id), mag_node_name(mag_id))
 
     print ("parsing DBLP to Citeseer data")
@@ -71,6 +74,8 @@ def make_matching_graph():
         
         if citeseer_node_name(citeseer_id) not in G.nodes:
             G.add_node(citeseer_node_name(citeseer_id), data = citeseer_node_data(citeseer_id))
+        if dblp_node_name(dblp_id) not in G.nodes:
+            G.add_node(citeseer_node_name(dblp_id), data = dblp_node_data(dblp_id))
         G.add_edge(dblp_node_name(dblp_id), citeseer_node_name(citeseer_id))
 
     
@@ -80,17 +85,23 @@ graph = make_matching_graph()
 
 mag_seen=set()
 
+print ("Logging seen MAG papers")
 for v in graph.nodes:
     try :
         if graph.nodes[v]['data']['src'] == 'MAG':
             mag_id = graph.nodes[v]['data']['id']
             mag_seen = mag_seen & set([mag_id])
     except Exception as e:
-        print(e)
-        print (v)
+        print ("Exception: "+str(e))
+        print (f"vertex at exception time {v}")
 
+print ("Adding dist 1 papers from MAG")
 #add all mag papers within 1 of the one we matched to get a real graph
+magrefcount = 0
 for mag_edge in MAG_Ref.find({},{"citer":1, "citee":1, "_id":0}):
+    if magrefcount % 1000000 == 0:
+        print (f"{magrefcount} MAG edges")
+    magrefcount = magrefcount+1
     src_magid = mag_edge['citer']
     dest_magid = mag_edge['citee']
     if dest_magid in mag_seen:
