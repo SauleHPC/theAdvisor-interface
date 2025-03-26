@@ -13,6 +13,10 @@ Citeseer_papers_collection=db["papers_Citeseer"]
 Citeseer_authors_collection=db["authors_Citeseer"]
 Citeseer_citations_collection=db["citations_Citeseer"]
 
+theAdvisor_collection=db["theAdvisor_papers"]
+theAdvisor_reverseindex=db["theAdvisor_reverse"]
+
+
 app = Flask(__name__)
 
 @app.route("/")
@@ -85,3 +89,34 @@ def get_citeseer_by_clusterdoc(cluster_id):
         return_array.append (get_citeseer_doc(cid["id"]))
     return return_array
     
+
+@app.route("/api/v1/fetch/theAdvisor/<int:adv_id>")
+def get_theadvisor_doc(adv_id):
+    theAdv_obj = theAdvisor_collection.find_one({"theadvisor_id": adv_id})
+    #print (theAdv_obj)
+    if theAdv_obj is None:
+        return ""
+    return obj_from_bson(theAdv_obj)
+
+def get_theadvisorobj_by_src(src):
+    match = theAdvisor_reverseindex.find_one(src)
+    if match is None:
+        return ""
+    theadv_id = match['theadvisor_id']
+    return get_theadvisor_doc(theadv_id)
+
+@app.route("/api/v1/fetch/theAdvisor_byDOI/<path:doi>")
+def get_theadvisor_by_doi(doi):
+    magObj = MAG_collection.find_one({'DOI':doi}, {'MAGid':1})
+    if magObj is None:
+        return ""
+    return get_theadvisorobj_by_src({'src':'MAG', 'id': magObj['MAGid']})
+
+@app.route("/api/v1/fetch/theAdvisor_byDBLP/<path:dblpid>")
+def get_theadvisor_by_dblp(dblpid):
+    return get_theadvisorobj_by_src({'src':'DBLP', 'id': dblpid})
+
+@app.route("/api/v1/fetch/theAdvisor_byMAG/<int:magid>")
+def get_theadvisor_by_MAG(magid):
+    return get_theadvisorobj_by_src({'src':'MAG', 'id': magid})
+
