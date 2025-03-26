@@ -1,4 +1,5 @@
 import networkx as nx
+import pymongo as pymongo
 from pymongo import MongoClient
 import os
 import sys
@@ -23,6 +24,11 @@ MAG_Ref = db['Original_MAG_References']
 
 #DBLP to Citeseer
 DBLPtoCiteseer = db['DBLPtoCiteseer'] 
+
+#output collections
+theadvisor_collection = db['theAdvisor_papers']
+theadvisor_reverse = db['theAdvisor_reverse']
+
 
 
 def dblp_node_name(paper_id):
@@ -50,7 +56,7 @@ def make_matching_graph():
     #first add all DBLP papers
     original_dblp_papers = Original_DBLP.find({}, {'paper_id': 1, '_id': 0})
 
-    if True: #delete me
+    if False: #delete me
         for paper in original_dblp_papers:
             paper_id = paper['paper_id']
             G.add_node(dblp_node_name(paper_id), data = dblp_node_data(paper_id))
@@ -81,7 +87,7 @@ def make_matching_graph():
         if dblp_node_name(dblp_id) not in G.nodes:
             G.add_node(dblp_node_name(dblp_id), data = dblp_node_data(dblp_id))
         G.add_edge(dblp_node_name(dblp_id), citeseer_node_name(citeseer_id))
-        if len(G.nodes) > 200000000: #delete me
+        if len(G.nodes) > 2000000: #delete me
             break
 
         
@@ -90,7 +96,7 @@ def make_matching_graph():
 
 
 def add_mag_dist_1(graph):
-    mag_seen=set()
+    mag_seen={}
 
     print(datetime.now())
     print ("Logging seen MAG papers")
@@ -98,12 +104,15 @@ def add_mag_dist_1(graph):
         try :
             if graph.nodes[v]['data']['src'] == 'MAG':
                 mag_id = graph.nodes[v]['data']['id']
-                mag_seen = mag_seen.union( set([mag_id]) )
+                mag_seen[mag_id] = True
+                if len(mag_seen) %100000 == 0:
+                    print (f"seen {len(mag_seen)}")
         except Exception as e:
             print ("Exception: "+str(e))
             print (f"vertex at exception time {v}")
 
     print (f"{len(mag_seen)} mag papers in")
+    print(datetime.now())
         
     mag_dist_0 = mag_seen.copy()
 
@@ -117,9 +126,8 @@ def add_mag_dist_1(graph):
             print (f"{magrefcount} MAG edges")
             print (f"{newmagpapers} new papers ")
             print (f"magseen: {len(mag_seen)}")
-            print (f"magdist0: {len(mag_dist_0)}")
 
-            if newmagpapers > 100: #delete me
+            if newmagpapers > 1000000: #delete me
                 break
         magrefcount = magrefcount+1
         src_magid = mag_edge['citer']
@@ -127,13 +135,13 @@ def add_mag_dist_1(graph):
        
         if dest_magid in mag_dist_0:
             if src_magid not in mag_seen:
-                mag_seen = mag_seen.union( set([src_magid]) )
+                mag_seen[src_magid] = True
                 graph.add_node(mag_node_name(src_magid), data = mag_node_data(src_magid))
                 newmagpapers += 1
             
         if src_magid in mag_dist_0:
             if dest_magid not in mag_seen:
-                mag_seen = mag_seen.union ( set([dest_magid]) )
+                mag_seen [dest_magid] = True
                 graph.add_node(mag_node_name(dest_magid), data = mag_node_data(dest_magid))
                 newmagpapers += 1
 
@@ -154,38 +162,80 @@ print(datetime.now())
 conn = nx.connected_components(graph)
 
 
-def make_the_advisor_paper(connected_component):
+def make_the_advisor_paper(graph, connected_component):
     ret = {}
-    ret['sources'] = connected_component.copy()
+    ret['sources'] = []
+    for c in connected_component:
+        ret['sources'].append(graph.nodes[c]['data'])
+    return ret
+
+        
+def populate_the_advisor_paper(graph, ret):
     found_dblp = None
     found_mag = None
     found_citeseer = None
-    for p in connected_component:
-        if graph.nodes[p]['data']['src'] == 'MAG':
-            found_mag = graph.nodes[p]['data']['id']
-        if graph.nodes[p]['data']['src'] == 'DBLP':
-            found_dblp = graph.nodes[p]['data']['id']
-        if graph.nodes[p]['data']['src'] == 'Citeseer':
-            found_citeseer = graph.nodes[p]['data']['id']
+    found = False
+    #first finding one ID of each type
+    for p in ret['sources']:
+        if p['src'] == 'MAG':
+            found_mag = p['id']
+        if p['src'] == 'DBLP':
+            found_dblp = p['id']
+        if p['src'] == 'Citeseer':
+            found_citeseer = p['id']
 
+    #taking meta data from DBLP first
     if found_dblp:
         dblppaper = db.Original_DBLP.find_one({'paper_id': found_dblp})
-        ret ['title'] = dblppaper['title']
-    elif found_mag:
+        if dblppaper: #not this should really not happen if the datasets are coherent
+            ret ['title'] = dblppaper['title']
+            found = True
+    #taking meta data from MAG second
+    if found_mag and not found:
         magpaper = db.Original_MAG.find_one({'MAGid': found_mag})
-        ret ['title'] = magpaper['title']
-    elif found_citeseer:
+        if magpaper:#not this should really not happen if the datasets are coherent
+            ret ['title'] = magpaper['title']
+            found = True
+    #taking meta data from Citeseer last
+    if found_citeseer and not found:
         citeseerpaper = db.papers_Citeseer.find_one({'id': found_citeseer})
-        ret ['title'] = magpaper['title'] or ""
+        if citeseerpaper:#not this should really not happen if the datasets are coherent
+            ret ['title'] = citeseerpaper['title'] or ""
+            found = True
+
+    # populating citation and references
+    #theadvisor_reverse
+    ret ['citer'] = []
+    ret ['citee'] = []
+    for s in ret['sources']:
+        if s['src'] == 'MAG':
+            mag_id = s['id']
+            for ref in db.Original_MAG_References.find({'citer': mag_id}):
+                mag_citee = ref['citee']
+                try:
+                    theadv_citee = theadvisor_reverse.find_one({'src':'MAG', 'id':mag_citee}) ['theadvisor_id']
+                    ret['citee'].append(theadv_citee)
+                except Exception as e:
+                    pass #ignore this can happen since we don't pull all MAG
+
+            for ref in db.Original_MAG_References.find({'citee': mag_id}):
+                mag_citer = ref['citer']
+                try:
+                    theadv_citer = theadvisor_reverse.find_one({'src':'MAG', 'id':mag_citee}) ['theadvisor_id']
+                    ret['citer'].append(theadv_citee)
+                except Exception as e:
+                    pass #ignore this can happen since we don't pull all MAG
+    
+    
     return ret
 
 
 print ("flushing")
 print(datetime.now())
     
-theadvisor_collection = db['theAdvisor_papers']
-
 theadvisor_collection.delete_many({}) #always flush
+theadvisor_reverse.delete_many({}) #always flush
+theadvisor_reverse.create_index([("src", pymongo.DESCENDING), ("id", pymongo.DESCENDING)])
 
 print ("flushed")
 print(datetime.now())
@@ -193,12 +243,43 @@ print(datetime.now())
 
 theadvisorid = 0
 
+all_the_papers = []
+
+print ("creating")
+print(datetime.now())
+
+#create numbering first
 for co in conn:
-    print (co)
-    pap = make_the_advisor_paper(co)
+    #print (co)
+    pap = make_the_advisor_paper(graph, co)
     pap['theadvisor_id'] = theadvisorid
+    all_the_papers.append(pap)
     theadvisorid +=1
-    print (pap)
+    if theadvisorid % 10000 == 0:
+        print (f"{datetime.now()} {pap}")
+
+print ("building reverse indexes")
+print(datetime.now())
+        
+#create reverse indexes
+for index, pap in enumerate(all_the_papers):
+    if index % 40000 == 0:
+        print (f"populating {index}")
+    for s in pap['sources']:
+        theadvisor_reverse.insert_one({'src':s['src'], 'id':s['id'], 'theadvisor_id': pap['theadvisor_id']})
+
+print ("populating")
+print(datetime.now())
+
+#populate the actual papers
+for index, pap in enumerate(all_the_papers):
+    if index % 100000 == 0:
+        print (f"populating {index}")
+    pap = populate_the_advisor_paper(graph, pap)
+    theadvisor_collection.insert_one(pap)
+    
+print ("done")
+print(datetime.now())
 
 
     
