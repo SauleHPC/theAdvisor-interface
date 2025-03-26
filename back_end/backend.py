@@ -4,6 +4,7 @@ import os
 import json
 from bson import json_util
 from fetcher import fetchers
+from citation import citation_bp
 
 client = MongoClient('mongodb://localhost:27017/')
 mongo_database = os.getenv('MONGO_DATABASE') or "theAdvisor"
@@ -26,3 +27,4 @@ def hello_world():
 
 
 app.register_blueprint(fetchers)
+app.register_blueprint(citation_bp)
