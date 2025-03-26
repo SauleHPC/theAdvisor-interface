@@ -19,9 +19,9 @@ pip3 install pandas sqlalchemy pymongo pymysql
 
 in the csx_2014 datafile; authors is 12M tuples. papers is 4M tuples; paperVersions is 2.4M tuples; citations is 86M tuples;
 
-pushing citation to mongo should take about 24 hours... :(
+pushing citation to mongo should take about 48 hours... :(
 
-once you ahve the data in sql, you can extract the right file to pass for the matchign code `extract_citeseer_match_input_from_mysql.py`; that takes some time. maybe 30 minutes?
+once you have the data in sql, you can extract the right file to pass for the matchign code `extract_citeseer_match_input_from_mysql.py`; that takes some time. maybe 30 minutes?
 
 ### Perform the matching within Citeseer to add an array of authors and an array of citations for each paper.
         * Use the citeseer_merge.py to add authors and citations array to each respective paper.
@@ -45,6 +45,9 @@ the MAG file is also currently hardcoded as `Papers.txt.gz`
 
 seems like importing DBLP is about 30 minutes
 seems like importing MAG is about an hour or so
+
+You upload the mag references with `MAG_References_to_mongo.py`; that takes some time; there are 1419880598 mag edges
+
 
 ## Push the matched files to MongoDB (DBLP->MAG and DBLP->Citeseer)
         * DBLP->MAG: Execute `upload_matched_files.py`, see usage
