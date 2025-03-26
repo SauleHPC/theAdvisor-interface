@@ -1,0 +1,20 @@
+1. reorg files in:
+  -raw upload
+  -compute matching
+  -upload matching
+  -construct theadvisor
+  -back end
+
+2. matching should prevent duplicate match in theadvisor id
+
+3. think about best place to index
+
+4. split routes in back end in different files for basic fetch and more advanced features
+
+5. API documentation
+
+6. using citeseer data for citation
+
+7. importing DBLP better to get nicer meta data
+
+8. in backend, decide what to do on "not found"
