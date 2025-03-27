@@ -207,6 +207,8 @@ def populate_the_advisor_paper(graph, ret):
     #theadvisor_reverse
     ret ['citer'] = []
     ret ['citee'] = []
+    citer = {}
+    citee = {}
     for s in ret['sources']:
         if s['src'] == 'MAG':
             mag_id = s['id']
@@ -214,7 +216,7 @@ def populate_the_advisor_paper(graph, ret):
                 mag_citee = ref['citee']
                 try:
                     theadv_citee = theadvisor_reverse.find_one({'src':'MAG', 'id':mag_citee}) ['theadvisor_id']
-                    ret['citee'].append(theadv_citee)
+                    citee[theadv_citee] = 1
                 except Exception as e:
                     pass #ignore this can happen since we don't pull all MAG
 
@@ -222,10 +224,11 @@ def populate_the_advisor_paper(graph, ret):
                 mag_citer = ref['citer']
                 try:
                     theadv_citer = theadvisor_reverse.find_one({'src':'MAG', 'id':mag_citee}) ['theadvisor_id']
-                    ret['citer'].append(theadv_citee)
+                    citer[theadv_citer] = 1
                 except Exception as e:
                     pass #ignore this can happen since we don't pull all MAG
-    
+    ret['citer'] = list (citer.keys())
+    ret['citee'] = list (citee.keys())
     
     return ret
 
