@@ -189,12 +189,18 @@ def populate_the_advisor_paper(graph, ret):
         dblppaper = db.Original_DBLP.find_one({'paper_id': found_dblp})
         if dblppaper: #not this should really not happen if the datasets are coherent
             ret ['title'] = dblppaper['title']
+            ret ['authors'] = dblppaper['authors']
+            ret ['doi'] = dblppaper['doi']
+            ret ['year'] = dblppaper['year']
             found = True
     #taking meta data from MAG second
     if found_mag and not found:
         magpaper = db.Original_MAG.find_one({'MAGid': found_mag})
         if magpaper:#not this should really not happen if the datasets are coherent
             ret ['title'] = magpaper['title']
+            ret ['doi'] = magpaper['DOI']
+            ret ['year'] = magpaper['year']
+            ret ['authors'] = []
             found = True
     #taking meta data from Citeseer last
     if found_citeseer and not found:
