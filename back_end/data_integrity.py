@@ -13,6 +13,6 @@ def multiple_mag():
         for source in paper['sources']:
             if source['src'] == 'MAG':
                 magcount+=1
-        if magcount > 1:
+        if magcount > 5:
             magreport.append(paper['theadvisor_id'])
     return magreport
