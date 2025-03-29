@@ -273,11 +273,11 @@ print(datetime.now())
 #create reverse indexes
 for index, pap in enumerate(all_the_papers):
     if index % 40000 == 0:
-        print (f"populating {index}")
+        print (f"populating reverse {index}")
     for s in pap['sources']:
         theadvisor_reverse.insert_one({'src':s['src'], 'id':s['id'], 'theadvisor_id': pap['theadvisor_id']})
 
-print ("populating")
+print ("populating main collection")
 print(datetime.now())
 
 #populate the actual papers

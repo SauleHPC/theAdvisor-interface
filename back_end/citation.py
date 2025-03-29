@@ -1,6 +1,7 @@
 from config import MAG_collection, DBLP_collection, Citeseer_papers_collection, Citeseer_authors_collection, Citeseer_citations_collection, theAdvisor_collection, theAdvisor_reverseindex
 import networkx as nx
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, request
+import fetcher as fetcher
 
 citation_bp = Blueprint('citation_something', __name__)
 
@@ -61,3 +62,29 @@ def page_rank():
     for i in range(0, 100):
         ret.append((verts[-i-1], ranks[verts[-i-1]]))
     return ret
+
+@citation_bp.route('/api/v1/citation/recommend', methods=['POST'])
+def recommend():
+    global graph
+    queries = []
+    query = request.get_json(force=True)["query"]
+    for s in query:
+        match = theAdvisor_reverseindex.find_one(s)
+        if match is None:
+            continue
+        theadv_id = match['theadvisor_id']
+        queries.append(theadv_id)
+    print (f"something {queries}")
+
+    pers = { }
+    for q in queries:
+        pers[q]= 1.0/len(query)
+    
+    ranks = nx.pagerank(graph, personalization = pers)
+    verts = [v for v in graph.nodes]
+    verts = sorted(verts, key=lambda x: ranks[x])
+    ret = []
+    for i in range(0, 100):
+        ret.append((verts[-i-1], ranks[verts[-i-1]]))
+    return ret
+
