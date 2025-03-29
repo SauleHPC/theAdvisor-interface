@@ -7,7 +7,7 @@ import json
 class Paper:
     def __init__(self):
         self.paper_id = None
-        self.author = None
+        self.author = []
         self.doi = None
         self.year = None
         self.pages = None

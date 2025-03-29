@@ -30,7 +30,7 @@ for i in range(0, 6800000, 50000):
     callbacks = [lambda currentPaper: populate_dblp_mongo(currentPaper, paper_docs)]
 
     print("parsing DBLP")
-    paper_docs = parse_DBLP_file(callbacks, i, i+50000)
+    parse_DBLP_file(callbacks, i, i+50000)
 
     if paper_docs is not None:    
         papers_collection.insert_many(paper_docs)
