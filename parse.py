@@ -18,6 +18,24 @@ class Paper:
         self.file_source = None
         self.line_number = 0
 
+common_doi_prefixes = ['https://doi.org/',\
+                       'http://www.crcnetbase.com/doi/abs/',\
+                       'http://doi.ieeecomputersociety.org/',\
+                       'https://doi.ieeecomputersociety.org/',\
+                       'https://dl.acm.org/doi/',\
+                       'https://www.tandfonline.com/doi/full/',\
+                       'http://www.tandfonline.com/doi/book/',\
+                       'http://doi.acm.org/',\
+                       'http://journals.sagepub.com/doi/full/',\
+                       'http://www.emeraldinsight.com/doi/full/',\
+                       'http://journals.sagepub.com/doi/pdf/',\
+                       'http://www.crcnetbase.com/doi/book/',\
+                       'https://www.tandfonline.com/doi/abs/',\
+                       'http://www.worldscinet.com/doi/abs/',\
+                       'http://www.mitpressjournals.org/doi/abs/',\
+                       'http://www.tandfonline.com/doi/pdf/',\
+                       'http://eudl.eu/doi/']
+
 DBLP_line_count_freq=-1
 
 '''
@@ -40,15 +58,15 @@ used to parse through DBLP
 since values are being parsed using xml it is suggested to make sure that you pass in 0 as the start_paper
 '''
         
-def parse_DBLP_file(callback,start_paper,count_to):
+def parse_DBLP_file(callback, start_paper: int,count_to: int):
     current_paper = None
     paper_title_arr = []
-    paper_docs = None
+    print (f"in parse_DBLP_FILE {start_paper} {count_to}")
     if(start_paper>=count_to):
         print("Error: Start paper is greater then or equal to end paper. Adjust so that start paper is less then the end paper.")
         sys.stdout.flush()
 
-    with gzip.open('../../../mnt/large_data/dblp-2023-05-11.xml.gz', 'rt', encoding='utf-8') as gz_file:
+    with gzip.open('dblp.xml.gz', 'rt', encoding='utf-8') as gz_file:
         count_line = 0
         pap = []
         i = 0
@@ -57,7 +75,7 @@ def parse_DBLP_file(callback,start_paper,count_to):
         inside_paper = False
         for current_line in gz_file:
             if i > count_to:
-                return paper_docs
+                return paper_title_arr
             
             #check for closing tag first for cases such as
             #</incollection><incollection mdate="2017-07-12" key="reference/cn/Prinz14" publtype="encyclopedia">
@@ -69,8 +87,8 @@ def parse_DBLP_file(callback,start_paper,count_to):
                     #   print(pap[i])
                     if(start_paper<=i):
                         for fnction in callback:
-                            paper_docs = fnction(current_paper)
-                        paper_title_arr.append(current_paper.title)
+                            fnction(current_paper)
+                        paper_title_arr.append(current_paper.title) #do we need to store all that?
 
                     current_paper = None
 
@@ -85,15 +103,21 @@ def parse_DBLP_file(callback,start_paper,count_to):
 
             if current_paper:
                 if '<author>' in current_line:
-                    current_paper.author = current_line.replace('<author>', '').replace('</author>', '').strip()
+                    current_paper.author.append(current_line.replace('<author>', '').replace('</author>', '').strip())
                 elif '<year>' in current_line:
                     current_paper.year = current_line.replace('<year>', '').replace('</year>', '').strip()
                 elif '<pages>' in current_line:
                     current_paper.pages = current_line.replace('<pages>', '').replace('</pages>', '').strip()
-                elif '<ee' in current_line:
+                elif '<ee' in current_line: #DBLP does not have a proper doi field; but lots of DOI in ee
                     doi_value = current_line.replace('<ee', '').replace('</ee>', '').strip()
-                    doi_value = doi_value.replace('https://doi.org/', '')
-                    current_paper.doi = doi_value
+                    if doi_value.find("doi") != -1 or doi_value.find("DOI") != -1 :
+                        start_at = doi_value.find('http') #input validation
+                        if start_at != -1:
+                            doi_value = doi_value[start_at:]
+                        for common_prefix in common_doi_prefixes:
+                            doi_value = doi_value.replace(common_prefix, '')
+                        
+                        current_paper.doi = doi_value
                 elif '<title>' in current_line:
                     current_paper.title = current_line.replace('<title>', '').replace('</title>', '').strip()
                 elif '<url>' in current_line:
@@ -109,7 +133,7 @@ def parse_DBLP_file(callback,start_paper,count_to):
                 pap.append(current_line)
                 count_line += 1
 
-    return paper_docs
+    return paper_title_arr
 
 
 '''
