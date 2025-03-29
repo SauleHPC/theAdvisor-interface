@@ -6,7 +6,10 @@ def populate_dblp_mongo(paper, paper_docs):
     # Paper document that has attributes that every paper needs to be associated with
     paper_document = {
         'paper_id': paper.paper_id,
-        'title': paper.title
+        'title': paper.title,
+        'authors': paper.author,
+        'year': paper.year,
+        'doi': paper.doi
     }
 
     paper_docs.append(paper_document)
