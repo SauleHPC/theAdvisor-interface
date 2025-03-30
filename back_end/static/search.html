@@ -14,7 +14,7 @@
     <div id="debuginfo"></div> <!-- display:none in css-->
     <div id="paperlist"></div>
     <script type="module">
-      import { mylocallog, fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, render_theadvisor_papers } from "./util.js";
+      import { mylocallog, fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, render_theadvisor_papers, recommendationQuery } from "./util.js";
 
       function update_view() {
 	  let search_papers = {"query":
@@ -41,28 +41,32 @@
 				    "id" : "journals/corr/abs-1209-6007"}
 			       ]
 			      };
-	  let sometheadvisorid = [204104, 229834]
-	  let all_promise = fetchAllTheAdvisor(sometheadvisorid);
+
+	  let queryresult = recommendationQuery(search_papers);
+
+	  queryresult.then((res) => {
+	      console.log("myamazing results: "+JSON.stringify(res));
+	      let sometheadvisorids = [];
+
+	      for (let idx in res) {
+		  sometheadvisorids.push(res[idx][0])
+	      }
+	      
+	      let all_promise = fetchAllTheAdvisor(sometheadvisorids);
+	      Promise.all(all_promise)
+		  .then((results) => {
+		      
+		      let paperlistelem = document.getElementById("paperlist");
+		      if (paperlistelem == null)
+			  throw "can't find an element called paperlist";
+		      paperlistelem.innerHTML = ""; //clear paperlist
+		      render_theadvisor_papers(paperlistelem, results);
+		  })
+		  .catch(error => {
+		      mylocallog(error); 
+		  });
+	  });
 	  
-	  Promise.all(all_promise)
-	      .then((results) => {
-		  
-		  let paperlistelem = document.getElementById("paperlist");
-		  if (paperlistelem == null)
-		      throw "can't find an element called paperlist";
-		  //paperlistelem.replaceChildren();
-		  paperlistelem.innerHTML = "";
-		  console.log("in promise")
-		  console.log(results)
-		  for (let r in results) {
-		      console.log(r);
-		      console.log(results[r]);
-		  }
-		  render_theadvisor_papers(paperlistelem, results);
-	      })
-	      .catch(error => {
-		  mylocallog(error); 
-	      });
       }
 
 	window.addEventListener('load', ()=> {

@@ -1,3 +1,5 @@
+//returns a promise that contains the DBLP object (as stored in theadvisor)
+//for dblpid
 export async function fetchDBLP(dblpid) {
     const loading = async() => {
 	const response = await fetch("/api/v1/fetch/DBLP/"+dblpid);
@@ -20,6 +22,34 @@ export async function fetchDBLP(dblpid) {
 	});
 }
 
+export async function recommendationQuery(sources) {
+    const loading = async() => {
+	const response = await fetch("/api/v1/citation/recommend", 	{
+	    method: "POST",
+	    body: JSON.stringify(sources),
+	});
+	if (response.status != 200)
+	    throw "no response";
+	const my_json = await response.text();
+	return my_json;
+    }
+    return loading()
+	.catch(error => {
+	    let deb = document.getElementById("debuginfo");
+	    let r = document.createElement("p")
+	    r.textContent="Could not get recommendation for " + JSON.stringify(sources);
+	    deb.appendChild(r);
+	    return Promise.reject(error);
+	})
+	.then(text =>{
+	    //console.log(dblpid+" "+text);
+	    return JSON.parse(text);
+	});
+}
+
+
+//returns a promise that contains the DBLP object (as stored in theadvisor)
+//for dblpid
 export async function fetchTheAdvisor(theadvisorid) {
     const loading = async() => {
 	const response = await fetch("/api/v1/fetch/theAdvisor/"+theadvisorid);
@@ -42,7 +72,7 @@ export async function fetchTheAdvisor(theadvisorid) {
 	});
 }
 
-//returns an array of promises.
+//returns an array of promises that contains the different papers requested in theadvisorids.
 //typically resolve them with Promise.all
 export function fetchAllTheAdvisor(theadvisorids) {
     let all_promise = []
@@ -54,31 +84,9 @@ export function fetchAllTheAdvisor(theadvisorids) {
     return all_promise;
 }
 
-export async function query(dblpid) {
-    const loading = async() => {
-	const response = await fetch("/"+dblpid+"");
-	if (response.status != 200)
-	    throw "no response";
-	const xml = await response.text();
-	return xml;
-    }
-    return loading()
-	.catch(error => {
-	    let deb = document.getElementById("debuginfo");
-	    let r = document.createElement("p")
-	    r.textContent="could not fetch dblp for "+dblpid;
-	    deb.appendChild(r);
-	    return Promise.reject(error);
-	})
-	.then(text =>{
-	return parseXml(text);
-    });
-}
 
-export function printpaper(dblppaper) {
-    console.log(papertostring(dblppaper));
-}
 
+//error logging features
 export function mylocallog(error) {
     console.error(error);
     let deb = document.getElementById("debuginfo");
@@ -90,8 +98,8 @@ export function mylocallog(error) {
     deb.appendChild(r);
 }
 
-
-export function make_theadvisor_paper_p (paper) {
+//return a DOM element representing a paper from theadvisor
+export function make_theadvisor_paper_dom (paper) {
     let newp = document.createElement("p");
 
     let authorspan = document.createElement("author");
@@ -123,10 +131,13 @@ export function make_theadvisor_paper_p (paper) {
     return newp
 }
 
+//papers is an array of papers as formatted by theadvisor
+//domelem is the DOM entry to add the papers to
 export function render_theadvisor_papers(domelem, papers) {
     for (let idx in papers) {
 	let pap = papers[idx];
 	
-	domelem.appendChild(make_theadvisor_paper_p(pap));
+	domelem.appendChild(make_theadvisor_paper_dom(pap));
     }
 }
+

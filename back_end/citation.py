@@ -80,7 +80,7 @@ def recommend():
     for q in queries:
         pers[q]= 1.0/len(query)
     
-    ranks = nx.pagerank(graph, personalization = pers)
+    ranks = nx.pagerank(graph, personalization = pers, dangling=pers)
     verts = [v for v in graph.nodes]
     verts = sorted(verts, key=lambda x: ranks[x])
     ret = []
