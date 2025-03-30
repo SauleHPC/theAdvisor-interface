@@ -2,6 +2,8 @@ from config import MAG_collection, DBLP_collection, Citeseer_papers_collection, 
 import networkx as nx
 from flask import Flask, Blueprint, request
 import fetcher as fetcher
+import psutil
+
 
 citation_bp = Blueprint('citation_something', __name__)
 
@@ -19,8 +21,11 @@ def safe_add_edge(src, dest):
     graph.add_edge(src, dest)
 
 @citation_bp.route('/load')
-def load_citation_graph(limit = 99999999, back_edges = True):
+def load_citation_graph(limit = 999999, back_edges = False):
     global graph
+    process = psutil.Process()
+    mem_before = process.memory_info().rss
+
     graph = nx.DiGraph()
     for theadvisor_paper in theAdvisor_collection.find({}, {'theadvisor_id':1, 'citer':1, 'citee':1}):
         if back_edges:
@@ -31,6 +36,10 @@ def load_citation_graph(limit = 99999999, back_edges = True):
             
         if len(graph.nodes) > limit:
             break
+
+    mem_after = process.memory_info().rss
+    mem_for_graph=mem_after - mem_before
+    print (f"vertices={len(graph.nodes)} edges={len(graph.edges)} memory={mem_for_graph/1024/1024}MB memperedge={mem_for_graph/len(graph.edges)}")
     return f"{len(graph.nodes)} {len(graph.edges)}"
 
 @citation_bp.route('/quickload')
