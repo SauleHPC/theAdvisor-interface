@@ -286,6 +286,7 @@ for index, pap in enumerate(all_the_papers):
         print (f"populating {index}")
     pap = populate_the_advisor_paper(graph, pap)
     theadvisor_collection.insert_one(pap)
+    all_the_papers[index] = None #an effort to control memory usage
     
 print ("done")
 print(datetime.now())
