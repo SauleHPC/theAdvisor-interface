@@ -87,7 +87,9 @@ export function render_theadvisor_papers(domelem, papers, investigatelink = fals
     for (let idx in papers) {
 	let pap = papers[idx];
 	
-	domelem.appendChild(make_theadvisor_paper_dom(pap, investigatelink));
+	if (pap != null) { //papers could be null if can't be fetched properly
+	    domelem.appendChild(make_theadvisor_paper_dom(pap, investigatelink));
+	}
     }
     
 }
