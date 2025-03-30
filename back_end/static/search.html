@@ -13,8 +13,8 @@
     <h2>Results</h2>
     <div id="resultlist"></div>
     <script type="module">
-      import { mylocallog, fetchDBLP, fetchTheAdvisor,
-	       fetchAllTheAdvisor, render_theadvisor_papers, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc,
+      import { fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc} from "./fetcher.js"
+      import { mylocallog,  render_theadvisor_papers, 
 	       recommendationQuery } from "./util.js";
 
       function update_view() {

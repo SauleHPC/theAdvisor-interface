@@ -15,8 +15,8 @@
     <h2>Citees</h2>
     <div id="papercitee"></div>
     <script type="module">
-      import { mylocallog, fetchTheAdvisor, fetchAllTheAdvisor,
-	       render_theadvisor_papers, } from "./util.js";
+      import { fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc} from "./fetcher.js"
+      import { mylocallog, render_theadvisor_papers, } from "./util.js";
 
       function update_view() {
 	  const paramsString = window.location.search;
