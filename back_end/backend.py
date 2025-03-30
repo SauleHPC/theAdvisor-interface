@@ -27,6 +27,8 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 
+app.config.from_prefixed_env()
+
 app.register_blueprint(fetchers)
 app.register_blueprint(citation_bp)
 app.register_blueprint(integrity_bp)

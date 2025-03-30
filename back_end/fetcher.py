@@ -16,7 +16,7 @@ def get_mag_doc(magid):
     MAGobj = MAG_collection.find_one({"MAGid": magid})
     #print (MAGobj)
     if MAGobj is None:
-        return ""
+        return {}
     return obj_from_bson(MAGobj)
 
 @fetchers.route("/api/v1/fetch/MAG_by_DOI/<path:doi>")
@@ -24,7 +24,7 @@ def get_mag_bydoi_doc(doi):
     MAGobj = MAG_collection.find_one({"DOI": doi})
     #print (MAGobj)
     if MAGobj is None:
-        return ""
+        return {}
     return obj_from_bson(MAGobj)
 
 
@@ -33,7 +33,7 @@ def get_dblp_doc(dblp_id):
     DBLPobj = DBLP_collection.find_one({"paper_id": dblp_id})
     #print (MAGobj)
     if DBLPobj is None:
-        return ""
+        return {}
     return obj_from_bson(DBLPobj)
 
 @fetchers.route("/api/v1/fetch/citeseer/<path:citeseer_id>")
@@ -41,7 +41,7 @@ def get_citeseer_doc(citeseer_id):
     CSobj = Citeseer_papers_collection.find_one({"id": citeseer_id})
     #print (MAGobj)
     if CSobj is None:
-        return ""
+        return {}
     CSobj = obj_from_bson(CSobj)
     print ("got paper")
 
@@ -65,7 +65,7 @@ def get_citeseer_by_clusterdoc(cluster_id):
     cluster_proj = {"cluster":1, "id":1}
     cluster = Citeseer_papers_collection.find({"cluster": cluster_id}, cluster_proj)
     if cluster is None:
-        return ""
+        return {}
     return_array = []
     for cid in cluster:
         return_array.append (get_citeseer_doc(cid["id"]))
@@ -77,13 +77,13 @@ def get_theadvisor_doc(adv_id):
     theAdv_obj = theAdvisor_collection.find_one({"theadvisor_id": adv_id})
     #print (theAdv_obj)
     if theAdv_obj is None:
-        return ""
+        return {}
     return obj_from_bson(theAdv_obj)
 
 def get_theadvisorobj_by_src(src):
     match = theAdvisor_reverseindex.find_one(src)
     if match is None:
-        return ""
+        return {}
     theadv_id = match['theadvisor_id']
     return get_theadvisor_doc(theadv_id)
 
@@ -91,7 +91,7 @@ def get_theadvisorobj_by_src(src):
 def get_theadvisor_by_doi(doi):
     magObj = MAG_collection.find_one({'DOI':doi}, {'MAGid':1})
     if magObj is None:
-        return ""
+        return {}
     return get_theadvisorobj_by_src({'src':'MAG', 'id': magObj['MAGid']})
 
 @fetchers.route("/api/v1/fetch/theAdvisor_byDBLP/<path:dblpid>")

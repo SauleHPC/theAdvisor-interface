@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="importmap">
+      {
+	  "imports": {
+	      "util": "./util.js"
+	  }
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Some Search Non Sense</h1>
+    <div id="debuginfo"></div> <!-- display:none in css-->
+    <div id="paperlist"></div>
+    <script type="module">
+      import { mylocallog, fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, render_theadvisor_papers } from "./util.js";
+
+      function update_view() {
+	  let search_papers = {"query":
+			       [
+				   {"src":"DBLP",
+				    "id" : "rec/journals/biodatamining/YeganehRSLM20"},
+				   {"src":"DBLP",
+				    "id" : "conf/bibm/YeganehSM18"},
+				   {"src":"DBLP",
+				    "id" : "journals/tkdd/SariyuceKSC17"},
+				   {"src":"DBLP",
+				    "id" : "journals/jpdc/SariyuceSKC15"},
+				   {"src":"DBLP",
+				    "id" : "conf/ipps/SariyuceSKC14"},
+				   {"src":"DBLP",
+				    "id" : "conf/asplos/SariyuceKSC13"},
+				   {"src":"DBLP",
+				    "id" : "conf/bigdataconf/SariyuceKSC13"},
+				   {"src":"DBLP",
+				    "id" : "conf/cluster/SariyuceSKC13"},
+				   {"src":"DBLP",
+				    "id" : "conf/sdm/CatalyurekKSS13"},
+				   {"src":"DBLP",
+				    "id" : "journals/corr/abs-1209-6007"}
+			       ]
+			      };
+	  let sometheadvisorid = [204104, 229834]
+	  let all_promise = fetchAllTheAdvisor(sometheadvisorid);
+	  
+	  Promise.all(all_promise)
+	      .then((results) => {
+		  
+		  let paperlistelem = document.getElementById("paperlist");
+		  if (paperlistelem == null)
+		      throw "can't find an element called paperlist";
+		  //paperlistelem.replaceChildren();
+		  paperlistelem.innerHTML = "";
+		  console.log("in promise")
+		  console.log(results)
+		  for (let r in results) {
+		      console.log(r);
+		      console.log(results[r]);
+		  }
+		  render_theadvisor_papers(paperlistelem, results);
+	      })
+	      .catch(error => {
+		  mylocallog(error); 
+	      });
+      }
+
+	window.addEventListener('load', ()=> {
+		    try {
+		    update_view();
+		    } catch (error) { //ignore error
+			mylocallog(error); 
+		    }
+
+	});
+      
+    </script>
+  </body>
+</html>
