@@ -78,7 +78,7 @@ export function fetchAllTheAdvisor(theadvisorids) {
     let all_promise = []
     for (let a in theadvisorids) {
 	let my_a = theadvisorids[a]
-	console.log(my_a);
+	//console.log(my_a);
 	all_promise.push(fetchTheAdvisor(my_a));
     }
     return all_promise;
@@ -99,7 +99,7 @@ export function mylocallog(error) {
 }
 
 //return a DOM element representing a paper from theadvisor
-export function make_theadvisor_paper_dom (paper) {
+export function make_theadvisor_paper_dom (paper, investigatelink = false) {
     let newp = document.createElement("p");
 
     let authorspan = document.createElement("author");
@@ -128,16 +128,26 @@ export function make_theadvisor_paper_dom (paper) {
     newp.appendChild(titlespan);
     newp.appendChild(yearspan);
     newp.appendChild(doi);
+
+    if (investigatelink) {
+	let invest = document.createElement("a");
+	invest.text= "INVESTIGATE";
+	invest.href = "investigate_theadvisor.html?id="+paper.theadvisor_id;
+	
+	newp.appendChild(invest);
+    }
+    
     return newp
 }
 
 //papers is an array of papers as formatted by theadvisor
 //domelem is the DOM entry to add the papers to
-export function render_theadvisor_papers(domelem, papers) {
+export function render_theadvisor_papers(domelem, papers, investigatelink = false) {
     for (let idx in papers) {
 	let pap = papers[idx];
 	
-	domelem.appendChild(make_theadvisor_paper_dom(pap));
+	domelem.appendChild(make_theadvisor_paper_dom(pap, investigatelink));
     }
+    
 }
 
