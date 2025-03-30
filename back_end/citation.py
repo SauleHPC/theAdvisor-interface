@@ -17,14 +17,19 @@ def safe_add_edge(src, dest):
     if dest not in graph.nodes:
         graph.add_node(dest)
     graph.add_edge(src, dest)
+    graph.add_edge(dest, src) #delete me
 
 @citation_bp.route('/load')
-def load_citation_graph(limit = 99999999):
+def load_citation_graph(limit = 99999999, back_edges = True):
     global graph
     graph = nx.DiGraph()
     for theadvisor_paper in theAdvisor_collection.find({}, {'theadvisor_id':1, 'citer':1, 'citee':1}):
         for pred in theadvisor_paper['citer']:
             safe_add_edge(pred, theadvisor_paper['theadvisor_id'])
+        if back_edges:
+            for succ in theadvisor_paper['citee']: #We want the back edges
+                safe_add_edge(succ, theadvisor_paper['theadvisor_id'])
+            
         if len(graph.nodes) > limit:
             break
     return f"{len(graph.nodes)} {len(graph.edges)}"

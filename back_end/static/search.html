@@ -8,11 +8,14 @@
   <body>
     <h1>Some Search Non Sense</h1>
     <div id="debuginfo"></div> <!-- display:none in css-->
-    <div id="paperlist"></div>
+    <h2>Query</h2>
+    <div id="querylist"></div>
+    <h2>Results</h2>
+    <div id="resultlist"></div>
     <script type="module">
       import { mylocallog, fetchDBLP, fetchTheAdvisor,
-      fetchAllTheAdvisor, render_theadvisor_papers,
-      recommendationQuery } from "./util.js";
+	       fetchAllTheAdvisor, render_theadvisor_papers, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc,
+	       recommendationQuery } from "./util.js";
 
       function update_view() {
 	  let search_papers = {"query": [
@@ -28,6 +31,17 @@
 	      {"src":"DBLP", "id" : "journals/corr/abs-1209-6007"}
 	  ]};
 
+	  let all_queries = fetchAllTheAdvisorBySrc(search_papers["query"]);
+	  console.log(all_queries);
+
+	  Promise.all(all_queries)
+	      .then((results) => {
+	   	  render_theadvisor_papers(document.getElementById("querylist"), results, true);
+	      }) .catch(error => {
+	   	  mylocallog(error);
+	      });
+
+
 	  let queryresult = recommendationQuery(search_papers);
 
 	  queryresult.then((res) => {
@@ -39,13 +53,7 @@
 	      
 	      let all_promise = fetchAllTheAdvisor(sometheadvisorids);
 	      Promise.all(all_promise) .then((results) => {
-		      
-		      let paperlistelem =
-		      document.getElementById("paperlist"); if
-		      (paperlistelem == null) throw "can't find an element called paperlist";
-		      paperlistelem.innerHTML = ""; //clear paperlist
-		      render_theadvisor_papers(paperlistelem,
-					       results, true);
+		  render_theadvisor_papers(document.getElementById("resultlist"), results, true);
 	      }) .catch(error => {
 		  mylocallog(error);
 	      });

@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint
+from flask import Flask, Blueprint, request
 from pymongo import MongoClient
 import os
 import json
@@ -102,3 +102,9 @@ def get_theadvisor_by_dblp(dblpid):
 def get_theadvisor_by_MAG(magid):
     return get_theadvisorobj_by_src({'src':'MAG', 'id': magid})
 
+@fetchers.route("/api/v1/fetch/theAdvisor_bysrc", methods=['POST'])
+def get_theadvisor_by_explicitsrc():
+    #This is done to santize input from user
+    query = request.get_json(force=True)
+    print(query)
+    return get_theadvisorobj_by_src({'src':query['src'], 'id': query['id']})
