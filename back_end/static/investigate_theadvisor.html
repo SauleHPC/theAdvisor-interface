@@ -33,14 +33,14 @@
 	      let citers = fetchAllTheAdvisor(theadvisor_paper['citer'])
 	      let citees = fetchAllTheAdvisor(theadvisor_paper['citee'])
 
-	      Promise.all(citers)
+	      citers
 		  .then((results) => {
 		      render_theadvisor_papers(document.getElementById("paperciter"),
 					       results, true);
 		  }) .catch(error => {
 		      mylocallog(error);
 		  });
-	      Promise.all(citees)
+	      citees
 		  .then((results) => {
 		      render_theadvisor_papers(document.getElementById("papercitee"),
 					       results, true);

@@ -83,8 +83,7 @@ export async function fetchTheAdvisorBySrc(src) {
 }
 
 
-//returns an array of promises that contains the different papers requested in theadvisorids.
-//typically resolve them with Promise.all
+//returns an  promise that resolves to an array of the different papers requested in theadvisorids.
 export function fetchAllTheAdvisor(theadvisorids) {
     let all_promise = []
     for (let a in theadvisorids) {
@@ -92,9 +91,10 @@ export function fetchAllTheAdvisor(theadvisorids) {
 	//console.log(my_a);
 	all_promise.push(fetchTheAdvisor(my_a));
     }
-    return all_promise;
+    return Promise.all(all_promise);
 }
 
+//returns an  promise that resolves to an array of the different papers requested in theadvisorids.
 export function fetchAllTheAdvisorBySrc(srcs) {
     let all_promise = []
     for (let a in srcs) {
@@ -104,5 +104,5 @@ export function fetchAllTheAdvisorBySrc(srcs) {
 	console.log(prom);
 	all_promise.push(prom);
     }
-    return all_promise;
+    return Promise.all(all_promise);
 }

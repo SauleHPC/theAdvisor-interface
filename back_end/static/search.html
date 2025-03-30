@@ -34,7 +34,7 @@
 	  let all_queries = fetchAllTheAdvisorBySrc(search_papers["query"]);
 	  console.log(all_queries);
 
-	  Promise.all(all_queries)
+	  all_queries
 	      .then((results) => {
 	   	  render_theadvisor_papers(document.getElementById("querylist"), results, true);
 	      }) .catch(error => {
@@ -51,8 +51,8 @@
 	      for (let idx in res) {
 		  sometheadvisorids.push(res[idx][0]) }
 	      
-	      let all_promise = fetchAllTheAdvisor(sometheadvisorids);
-	      Promise.all(all_promise) .then((results) => {
+	      let promise_of_papers = fetchAllTheAdvisor(sometheadvisorids);
+	      promise_of_papers.then((results) => {
 		  render_theadvisor_papers(document.getElementById("resultlist"), results, true);
 	      }) .catch(error => {
 		  mylocallog(error);
