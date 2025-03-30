@@ -13,7 +13,7 @@
     <h2>Results</h2>
     <div id="resultlist"></div>
     <script type="module">
-      import { fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc} from "./fetcher.js"
+      import { fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, fetchAllTheAdvisorAlt, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc} from "./fetcher.js"
       import { mylocallog,  render_theadvisor_papers, 
 	       recommendationQuery } from "./util.js";
 
@@ -32,7 +32,7 @@
 	  ]};
 
 	  let all_queries = fetchAllTheAdvisorBySrc(search_papers["query"]);
-	  console.log(all_queries);
+	  //console.log(all_queries);
 
 	  all_queries
 	      .then((results) => {
@@ -41,18 +41,21 @@
 	   	  mylocallog(error);
 	      });
 
-
 	  let queryresult = recommendationQuery(search_papers);
 
 	  queryresult.then((res) => {
-	      console.log("myamazing results: "+JSON.stringify(res));
+	      //console.log("myamazing results: "+JSON.stringify(res));
 	      let sometheadvisorids = [];
 
 	      for (let idx in res) {
 		  sometheadvisorids.push(res[idx][0]) }
-	      
+
+	      const before = Date.now();
 	      let promise_of_papers = fetchAllTheAdvisor(sometheadvisorids);
 	      promise_of_papers.then((results) => {
+		  const after = Date.now();
+		  console.log(after - before + " ms");
+
 		  render_theadvisor_papers(document.getElementById("resultlist"), results, true);
 	      }) .catch(error => {
 		  mylocallog(error);

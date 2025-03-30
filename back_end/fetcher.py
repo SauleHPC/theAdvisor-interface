@@ -80,6 +80,21 @@ def get_theadvisor_doc(adv_id):
         return {}
     return obj_from_bson(theAdv_obj)
 
+@fetchers.route("/api/v1/fetch/theAdvisor_array", methods=['POST'])
+def get_theadvisor_array():
+    query = request.get_json(force=True)
+    print (query)
+    query = query["query"]
+    if (len(query) > 1000):
+        return {} #proper error message for "that's too much"
+    ret = []
+    
+    for advp in theAdvisor_collection.find({"theadvisor_id": {"$in":query}}):
+        ret.append(obj_from_bson(advp))
+    
+    return ret
+
+
 def get_theadvisorobj_by_src(src):
     match = theAdvisor_reverseindex.find_one(src)
     if match is None:

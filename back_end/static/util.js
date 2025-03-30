@@ -29,7 +29,7 @@ export async function recommendationQuery(sources) {
 
 //error logging features
 export function mylocallog(error) {
-    console.error(error);
+    //console.error(error);
     let deb = document.getElementById("debuginfo");
     let r = document.createElement("p")
     r.textContent="Something went wrong in processing data. Cause: "+error.toString();
