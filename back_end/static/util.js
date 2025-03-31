@@ -1,29 +1,61 @@
+//return a DOM element representing a paper from DBLP (from theadvisor service)
+export function make_dblp_paper_dom (paper) {
+    let newp = document.createElement("p");
 
-export async function recommendationQuery(sources) {
-    const loading = async() => {
-	const response = await fetch("/api/v1/citation/recommend", 	{
-	    method: "POST",
-	    body: JSON.stringify(sources),
-	});
-	if (response.status != 200)
-	    throw "no response";
-	const my_json = await response.text();
-	return my_json;
+    let dblp = document.createElement("span");
+    let dblp_a = document.createElement("a");
+    dblp_a.text = paper.paper_id;
+    dblp_a.href = "https://dblp.org/rec/"+paper.paper_id+".html";
+    dblp.appendChild(dblp_a);
+
+    
+    let authorspan = document.createElement("span");
+    for (let idx in paper.authors) {
+	authorspan.innerHTML += paper.authors[idx]
+	if (idx < paper.authors.length-1) {
+		authorspan.innerHTML += ", ";
+	}
+	
     }
-    return loading()
-	.catch(error => {
-	    let deb = document.getElementById("debuginfo");
-	    let r = document.createElement("p")
-	    r.textContent="Could not get recommendation for " + JSON.stringify(sources);
-	    deb.appendChild(r);
-	    return Promise.reject(error);
-	})
-	.then(text =>{
-	    //console.log(dblpid+" "+text);
-	    return JSON.parse(text);
-	});
+    authorspan.innerHTML += '. '
+    
+    let titlespan = document.createElement("span");
+    titlespan.innerHTML = paper.title;
+
+    let yearspan = document.createElement("span");
+    yearspan.innerHTML = paper.year;
+
+    let doi = document.createElement("span");
+    let doi_a = document.createElement("a");
+    doi_a.text = paper.doi;
+    doi_a.href = "https://dx.doi.org/"+paper.doi;
+    doi.appendChild(doi_a);
+
+    let spacer = document.createElement("span");
+    spacer.innerHTML = "&nbsp;";
+
+    newp.appendChild(dblp);
+    newp.appendChild(authorspan);
+    newp.appendChild(spacer.cloneNode(true));
+    newp.appendChild(titlespan);
+    newp.appendChild(spacer.cloneNode(true));
+    newp.appendChild(yearspan);
+    newp.appendChild(spacer.cloneNode(true));
+    newp.appendChild(doi);
+    
+    return newp;
 }
 
+export function render_dblp_papers(domelem, papers) {
+    for (let idx in papers) {
+	let pap = papers[idx];
+	
+	if (pap != null) { //papers could be null if can't be fetched properly
+	    domelem.appendChild(make_dblp_paper_dom(pap));
+	}
+    }
+    
+}
 
 
 

@@ -14,8 +14,8 @@
     <div id="resultlist"></div>
     <script type="module">
       import { fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc} from "./fetcher.js"
-      import { mylocallog,  render_theadvisor_papers, 
-	       recommendationQuery } from "./util.js";
+      import { mylocallog,  render_theadvisor_papers } from "./util.js";
+      import { recommendationQuery } from "./recommendation.js";
 
       function update_view() {
 	  let search_papers = {"query": [

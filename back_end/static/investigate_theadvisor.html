@@ -11,14 +11,16 @@
     <h2>Info</h2>
     <div id="paperinfo"></div>
     <h2>Source</h2>
-    <div id="sourceinfo"></div>
+    <div id="DBLPsourceinfo"></div>
+    <div id="MAGsourceinfo"></div>
+    <div id="Citeseersourceinfo"></div>
     <h2>Citers</h2>
     <div id="paperciter"></div>
     <h2>Citees</h2>
     <div id="papercitee"></div>
     <script type="module">
-      import { fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc} from "./fetcher.js"
-      import { mylocallog, render_theadvisor_papers, } from "./util.js";
+      import { fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc, fetchDBLP} from "./fetcher.js"
+      import { mylocallog, render_theadvisor_papers, render_dblp_papers} from "./util.js";
 
       function update_view() {
 	  const paramsString = window.location.search;
@@ -32,6 +34,39 @@
 	      console.log(theadvisor_paper);
 	      render_theadvisor_papers(document.getElementById("paperinfo"), [theadvisor_paper], true);
 
+	      {
+		  let dblp_srcs = [];
+		  for (const src of theadvisor_paper['sources']) {
+		      if (src['src'] == 'DBLP') {
+			  dblp_srcs.push(src['id']);
+		      }
+		  }
+		  for (const dblpid of dblp_srcs) {//yes this could be merged in loop above but prepping for futre batch queries
+		      fetchDBLP(dblpid).then((dblpentry) => {
+			  console.log("received: "+ JSON.stringify(dblpentry));
+			  render_dblp_papers(document.getElementById("DBLPsourceinfo"), [dblpentry]);
+		      });
+		  }
+	      }
+	      
+	      {
+		  let mag_srcs = [];
+		  for (const src of theadvisor_paper['sources']) {
+		      if (src['src'] == 'MAG') {
+			  mag_srcs.push(src['id']);
+		      }
+		  }
+	      }
+	      {
+		  let citeseer_srcs = [];
+		  for (const src of theadvisor_paper['sources']) {
+		      if (src['src'] == 'Citeseer') {
+			  citeseer_srcs.push(src['id']);
+		      }
+		  }
+	      }
+	      
+	      
 	      let citers = fetchAllTheAdvisor(theadvisor_paper['citer'])
 	      let citees = fetchAllTheAdvisor(theadvisor_paper['citee'])
 
