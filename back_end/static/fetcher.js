@@ -22,6 +22,31 @@ export async function fetchDBLP(dblpid) {
 	});
 }
 
+//returns a promise that contains the MAG object (as stored in theadvisor)
+//for dblpid
+export async function fetchMAG(magid) {
+    const loading = async() => {
+	const response = await fetch("/api/v1/fetch/MAG/"+magid);
+	if (response.status != 200)
+	    throw "no response";
+	const my_json = await response.text();
+	return my_json;
+    }
+    return loading()
+	.catch(error => {
+	    let deb = document.getElementById("debuginfo");
+	    let r = document.createElement("p")
+	    r.textContent="Could not fetch dblp for "+magid;
+	    deb.appendChild(r);
+	    return Promise.reject(error);
+	})
+	.then(text =>{
+	    //console.log(dblpid+" "+text);
+	    return JSON.parse(text);
+	});
+}
+
+
 //returns a promise that contains the theadvisor object of key theadvisorid
 export async function fetchTheAdvisor(theadvisorid) {
     const loading = async() => {

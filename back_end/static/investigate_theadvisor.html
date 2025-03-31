@@ -19,8 +19,8 @@
     <h2>Citees</h2>
     <div id="papercitee"></div>
     <script type="module">
-      import { fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc, fetchDBLP} from "./fetcher.js"
-      import { mylocallog, render_theadvisor_papers, render_dblp_papers} from "./util.js";
+      import { fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc, fetchDBLP, fetchMAG} from "./fetcher.js"
+      import { mylocallog, render_theadvisor_papers, render_dblp_papers, render_mag_papers} from "./util.js";
 
       function update_view() {
 	  const paramsString = window.location.search;
@@ -56,6 +56,13 @@
 			  mag_srcs.push(src['id']);
 		      }
 		  }
+		  for (const magid of mag_srcs) {//yes this could be merged in loop above but prepping for futre batch queries
+		      fetchMAG(magid).then((magentry) => {
+			  console.log("received: "+ JSON.stringify(magentry));
+			  render_mag_papers(document.getElementById("DBLPsourceinfo"), [magentry]);
+		      });
+		  }
+
 	      }
 	      {
 		  let citeseer_srcs = [];

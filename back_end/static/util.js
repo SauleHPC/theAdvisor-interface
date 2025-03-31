@@ -54,7 +54,52 @@ export function render_dblp_papers(domelem, papers) {
 	    domelem.appendChild(make_dblp_paper_dom(pap));
 	}
     }
+}
+
+
+//return a DOM element representing a paper from MAG (from theadvisor service)
+export function make_mag_paper_dom (paper) {
+    let newp = document.createElement("p");
+
+    let mag = document.createElement("span");
+    mag.innerText = paper.MAGid
     
+    let titlespan = document.createElement("span");
+    titlespan.innerHTML = paper.title;
+
+    let yearspan = document.createElement("span");
+    yearspan.innerHTML = paper.year;
+
+    let doi = document.createElement("span");
+    let doi_a = document.createElement("a");
+    doi_a.text = paper.DOI;
+    doi_a.href = "https://dx.doi.org/"+paper.DOI;
+    doi.appendChild(doi_a);
+
+    let spacer = document.createElement("span");
+    spacer.innerHTML = "&nbsp;";
+
+    newp.appendChild(mag);
+    newp.appendChild(spacer.cloneNode(true));
+    newp.appendChild(titlespan);
+    newp.appendChild(spacer.cloneNode(true));
+    newp.appendChild(yearspan);
+    newp.appendChild(spacer.cloneNode(true));
+    newp.appendChild(doi);
+    
+    return newp;
+}
+
+
+
+export function render_mag_papers(domelem, papers) {
+    for (let idx in papers) {
+	let pap = papers[idx];
+	
+	if (pap != null) { //papers could be null if can't be fetched properly
+	    domelem.appendChild(make_mag_paper_dom(pap));
+	}
+    }
 }
 
 
