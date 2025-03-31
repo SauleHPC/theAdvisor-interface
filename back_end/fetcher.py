@@ -17,6 +17,11 @@ def normalize_advisor_objects(adv):
         adv['doi']=""
     return adv
     
+#somehow there are nans that show up in DOIs
+def normalize_MAG_objects(magp):
+    if isinstance(magp['DOI'], Number) and math.isnan(magp['DOI']):
+        magp['DOI']=""
+    return magp
 
 @fetchers.route("/api/v1/fetch/MAG/<int:magid>")
 def get_mag_doc(magid):
@@ -24,7 +29,7 @@ def get_mag_doc(magid):
     #print (MAGobj)
     if MAGobj is None:
         return {}
-    return obj_from_bson(MAGobj)
+    return normalize_MAG_objects(obj_from_bson(MAGobj))
 
 @fetchers.route("/api/v1/fetch/MAG_by_DOI/<path:doi>")
 def get_mag_bydoi_doc(doi):
