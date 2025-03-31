@@ -95,6 +95,12 @@ def recommend():
     
     ranks = nx.pagerank(graph, personalization = pers, dangling=pers)
     verts = [v for v in graph.nodes]
+
+    # we don't want to return the vertices used in seeding the
+    # search. so filtering them out
+    for q in queries:
+        ranks[q]= 0.
+    
     verts = sorted(verts, key=lambda x: ranks[x])
     ret = []
     for i in range(0, 100):
