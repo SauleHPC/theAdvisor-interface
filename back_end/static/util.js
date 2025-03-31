@@ -43,7 +43,7 @@ export function mylocallog(error) {
 export function make_theadvisor_paper_dom (paper, investigatelink = false) {
     let newp = document.createElement("p");
 
-    let authorspan = document.createElement("author");
+    let authorspan = document.createElement("span");
     for (let idx in paper.authors) {
 	authorspan.innerHTML += paper.authors[idx]
 	if (idx < paper.authors.length-1) {
@@ -64,17 +64,24 @@ export function make_theadvisor_paper_dom (paper, investigatelink = false) {
     doi_a.text = paper.doi;
     doi_a.href = "https://dx.doi.org/"+paper.doi;
     doi.appendChild(doi_a);
+
+    let spacer = document.createElement("span");
+    spacer.innerHTML = "&nbsp;";
     
-    newp.appendChild(authorspan);    
+    newp.appendChild(authorspan);
+    newp.appendChild(spacer.cloneNode(true));
     newp.appendChild(titlespan);
+    newp.appendChild(spacer.cloneNode(true));
     newp.appendChild(yearspan);
+    newp.appendChild(spacer.cloneNode(true));
     newp.appendChild(doi);
 
     if (investigatelink) {
 	let invest = document.createElement("a");
 	invest.text= "INVESTIGATE";
 	invest.href = "investigate_theadvisor.html?id="+paper.theadvisor_id;
-	
+
+	newp.appendChild(spacer.cloneNode(true));
 	newp.appendChild(invest);
     }
     
