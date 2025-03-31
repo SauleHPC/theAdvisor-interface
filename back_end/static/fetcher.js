@@ -61,6 +61,7 @@ export async function fetchTheAdvisorArray(theadvisorids) {
 	if (response.status != 200)
 	    throw "no response";
 	const my_json = await response.text();
+	//console.log(my_json);
 	return my_json;
     }
     return loading()
@@ -77,6 +78,7 @@ export async function fetchTheAdvisorArray(theadvisorids) {
 		const obj = JSON.parse(text);
 		return obj;
 	    } catch (s) { //JSON.parse throws SyntaxError on illegal JSON
+		//console.log(s);
 		return null;
 	    }
 	});
@@ -118,19 +120,38 @@ export async function fetchTheAdvisorBySrc(src) {
 //returns an  promise that resolves to an array of the different papers requested in theadvisorids.
 //Note that some ids may disappear if not found
 export function fetchAllTheAdvisor(theadvisorids) {
-    return fetchTheAdvisorArray(theadvisorids)
+    return fetchTheAdvisorArray(theadvisorids);
 }
 
 
 //returns an  promise that resolves to an array of the different papers requested in theadvisorids.
-export function fetchAllTheAdvisorBySrc(srcs) {
-    let all_promise = []
-    for (let a in srcs) {
-	let src = srcs[a]
-	//console.log(src);
-	let prom = fetchTheAdvisorBySrc(src);
-	//console.log(prom);
-	all_promise.push(prom);
+export async function fetchAllTheAdvisorBySrc(srcs) {
+    const loading = async() => {
+	const response = await fetch("/api/v1/fetch/theAdvisor_bysrc_array",
+				     {
+					 method: "POST",
+					 body: JSON.stringify({ "query": srcs })
+				     });
+	if (response.status != 200)
+	    throw "no response";
+	const my_json = await response.text();
+	return my_json;
     }
-    return Promise.all(all_promise);
+    return loading()
+	.catch(error => {
+	    let deb = document.getElementById("debuginfo");
+	    let r = document.createElement("p")
+	    r.textContent="Could not fetch theadvisor for "+theadvisorid;
+	    deb.appendChild(r);
+	    return Promise.reject(error);
+	})
+	.then(text =>{
+	    //console.log(dblpid+" "+text);
+	    try {
+		const obj = JSON.parse(text);
+		return obj;
+	    } catch (s) { //JSON.parse throws SyntaxError on illegal JSON
+		return null;
+	    }
+	});
 }

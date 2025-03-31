@@ -13,7 +13,7 @@
     <h2>Results</h2>
     <div id="resultlist"></div>
     <script type="module">
-      import { fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, fetchAllTheAdvisorAlt, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc} from "./fetcher.js"
+      import { fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc} from "./fetcher.js"
       import { mylocallog,  render_theadvisor_papers, 
 	       recommendationQuery } from "./util.js";
 
@@ -55,7 +55,8 @@
 	      promise_of_papers.then((results) => {
 		  const after = Date.now();
 		  console.log(after - before + " ms");
-
+		  //console.log(results);
+		  
 		  render_theadvisor_papers(document.getElementById("resultlist"), results, true);
 	      }) .catch(error => {
 		  mylocallog(error);
