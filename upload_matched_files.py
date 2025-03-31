@@ -30,7 +30,7 @@ if __name__ == "__main__":
         usage()
     collection_name = sys.argv[1]
 
-    flush_collection = False
+    flush_collection = True
 
     # Connect to MongoDB
     client = MongoClient('mongodb://localhost:27017/')  # Adjust if using a remote MongoDB server

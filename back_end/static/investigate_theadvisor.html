@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="importmap">
+      { "imports": { "util": "./util.js" } }
+    </script>
+  </head>
+  <body>
+    <h1>Investigation Zone</h1>
+    <div id="debuginfo"></div> <!-- display:none in css-->
+    <h2>Info</h2>
+    <div id="paperinfo"></div>
+    <h2>Source</h2>
+    <div id="DBLPsourceinfo"></div>
+    <div id="MAGsourceinfo"></div>
+    <div id="Citeseersourceinfo"></div>
+    <h2>Citers</h2>
+    <div id="paperciter"></div>
+    <h2>Citees</h2>
+    <div id="papercitee"></div>
+    <script type="module">
+      import { fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc, fetchDBLP, fetchMAG} from "./fetcher.js"
+      import { mylocallog, render_theadvisor_papers, render_dblp_papers, render_mag_papers} from "./util.js";
+
+      function update_view() {
+	  const paramsString = window.location.search;
+	  const searchParams = new URLSearchParams(paramsString);
+	  const id = searchParams.get("id");
+
+	  //console.log(id);
+	  
+	  let p = fetchTheAdvisor(id);
+	  p.then((theadvisor_paper) => {
+	      console.log(theadvisor_paper);
+	      render_theadvisor_papers(document.getElementById("paperinfo"), [theadvisor_paper], true);
+
+	      {
+		  let dblp_srcs = [];
+		  for (const src of theadvisor_paper['sources']) {
+		      if (src['src'] == 'DBLP') {
+			  dblp_srcs.push(src['id']);
+		      }
+		  }
+		  for (const dblpid of dblp_srcs) {//yes this could be merged in loop above but prepping for futre batch queries
+		      fetchDBLP(dblpid).then((dblpentry) => {
+			  console.log("received: "+ JSON.stringify(dblpentry));
+			  render_dblp_papers(document.getElementById("DBLPsourceinfo"), [dblpentry]);
+		      });
+		  }
+	      }
+	      
+	      {
+		  let mag_srcs = [];
+		  for (const src of theadvisor_paper['sources']) {
+		      if (src['src'] == 'MAG') {
+			  mag_srcs.push(src['id']);
+		      }
+		  }
+		  for (const magid of mag_srcs) {//yes this could be merged in loop above but prepping for futre batch queries
+		      fetchMAG(magid).then((magentry) => {
+			  console.log("received: "+ JSON.stringify(magentry));
+			  render_mag_papers(document.getElementById("DBLPsourceinfo"), [magentry]);
+		      });
+		  }
+
+	      }
+	      {
+		  let citeseer_srcs = [];
+		  for (const src of theadvisor_paper['sources']) {
+		      if (src['src'] == 'Citeseer') {
+			  citeseer_srcs.push(src['id']);
+		      }
+		  }
+	      }
+	      
+	      
+	      let citers = fetchAllTheAdvisor(theadvisor_paper['citer'])
+	      let citees = fetchAllTheAdvisor(theadvisor_paper['citee'])
+
+	      citers
+		  .then((results) => {
+		      render_theadvisor_papers(document.getElementById("paperciter"),
+					       results, true);
+		  }) .catch(error => {
+		      mylocallog(error);
+		  });
+	      citees
+		  .then((results) => {
+		      render_theadvisor_papers(document.getElementById("papercitee"),
+					       results, true);
+		  }) .catch(error => {
+		      mylocallog(error);
+		  });
+	  });
+      }
+
+	window.addEventListener('load', ()=> { try { update_view(); }
+		    catch (error) { //ignore error mylocallog(error);
+		    }
+
+	});
+      
+    </script>
+  </body>
+</html>

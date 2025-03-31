@@ -184,22 +184,34 @@ def populate_the_advisor_paper(graph, ret):
         if p['src'] == 'Citeseer':
             found_citeseer = p['id']
 
+    #prepopulating for consistency
+    ret ['title'] = ""
+    ret ['doi'] = ""
+    ret ['year'] = 0
+    ret ['authors'] = []
+    
     #taking meta data from DBLP first
     if found_dblp:
         dblppaper = db.Original_DBLP.find_one({'paper_id': found_dblp})
-        if dblppaper: #not this should really not happen if the datasets are coherent
+        if dblppaper: #note this should really not happen if the datasets are coherent
             ret ['title'] = dblppaper['title']
+            ret ['authors'] = dblppaper['authors']
+            ret ['doi'] = dblppaper['doi']
+            ret ['year'] = dblppaper['year']
             found = True
     #taking meta data from MAG second
     if found_mag and not found:
         magpaper = db.Original_MAG.find_one({'MAGid': found_mag})
-        if magpaper:#not this should really not happen if the datasets are coherent
+        if magpaper: #note this should really not happen if the datasets are coherent
             ret ['title'] = magpaper['title']
+            ret ['doi'] = magpaper['DOI']
+            ret ['year'] = magpaper['year']
+            ret ['authors'] = []
             found = True
     #taking meta data from Citeseer last
     if found_citeseer and not found:
         citeseerpaper = db.papers_Citeseer.find_one({'id': found_citeseer})
-        if citeseerpaper:#not this should really not happen if the datasets are coherent
+        if citeseerpaper: #note this should really not happen if the datasets are coherent
             ret ['title'] = citeseerpaper['title'] or ""
             found = True
 
@@ -218,7 +230,7 @@ def populate_the_advisor_paper(graph, ret):
                     theadv_citee = theadvisor_reverse.find_one({'src':'MAG', 'id':mag_citee}) ['theadvisor_id']
                     citee[theadv_citee] = 1
                 except Exception as e:
-                    pass #ignore this can happen since we don't pull all MAG
+                    pass #ignore this; it can happen since we don't pull all MAG
 
             for ref in db.Original_MAG_References.find({'citee': mag_id}):
                 mag_citer = ref['citer']
@@ -226,7 +238,7 @@ def populate_the_advisor_paper(graph, ret):
                     theadv_citer = theadvisor_reverse.find_one({'src':'MAG', 'id':mag_citee}) ['theadvisor_id']
                     citer[theadv_citer] = 1
                 except Exception as e:
-                    pass #ignore this can happen since we don't pull all MAG
+                    pass #ignore this; it can happen since we don't pull all MAG
     ret['citer'] = list (citer.keys())
     ret['citee'] = list (citee.keys())
     
@@ -261,17 +273,19 @@ for co in conn:
     if theadvisorid % 10000 == 0:
         print (f"{datetime.now()} {pap}")
 
+conn = None #in an attempt to free memory
+
 print ("building reverse indexes")
 print(datetime.now())
         
 #create reverse indexes
 for index, pap in enumerate(all_the_papers):
     if index % 40000 == 0:
-        print (f"populating {index}")
+        print (f"populating reverse {index}")
     for s in pap['sources']:
         theadvisor_reverse.insert_one({'src':s['src'], 'id':s['id'], 'theadvisor_id': pap['theadvisor_id']})
 
-print ("populating")
+print ("populating main collection")
 print(datetime.now())
 
 #populate the actual papers
@@ -280,6 +294,7 @@ for index, pap in enumerate(all_the_papers):
         print (f"populating {index}")
     pap = populate_the_advisor_paper(graph, pap)
     theadvisor_collection.insert_one(pap)
+    all_the_papers[index] = None #an effort to control memory usage
     
 print ("done")
 print(datetime.now())

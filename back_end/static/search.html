@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="importmap">
+      { "imports": { "util": "./util.js" } }
+    </script>
+  </head>
+  <body>
+    <h1>Some Search Non Sense</h1>
+    <div id="debuginfo"></div> <!-- display:none in css-->
+    <h2>Query</h2>
+    <div id="querylist"></div>
+    <h2>Results</h2>
+    <div id="resultlist"></div>
+    <script type="module">
+      import { fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc} from "./fetcher.js"
+      import { mylocallog,  render_theadvisor_papers, theadvisor_array_to_dict } from "./util.js";
+      import { recommendationQuery } from "./recommendation.js";
+
+      function update_view() {
+	  let search_papers = {"query": [
+	      {"src":"DBLP", "id" : "rec/journals/biodatamining/YeganehRSLM20"},
+	      {"src":"DBLP", "id" : "conf/bibm/YeganehSM18"},
+	      {"src":"DBLP", "id" : "journals/tkdd/SariyuceKSC17"},
+	      {"src":"DBLP", "id" : "journals/jpdc/SariyuceSKC15"},
+	      {"src":"DBLP", "id" : "conf/ipps/SariyuceSKC14"},
+	      {"src":"DBLP", "id" : "conf/asplos/SariyuceKSC13"},
+	      {"src":"DBLP", "id" : "conf/bigdataconf/SariyuceKSC13"},
+	      {"src":"DBLP", "id" : "conf/cluster/SariyuceSKC13"},
+	      {"src":"DBLP", "id" : "conf/sdm/CatalyurekKSS13"},
+	      {"src":"DBLP", "id" : "journals/corr/abs-1209-6007"}
+	  ]};
+
+	  let all_queries = fetchAllTheAdvisorBySrc(search_papers["query"]);
+	  //console.log(all_queries);
+
+	  all_queries
+	      .then((results) => {
+	   	  render_theadvisor_papers(document.getElementById("querylist"), results, true);
+	      }) .catch(error => {
+	   	  mylocallog(error);
+	      });
+
+	  let queryresult = recommendationQuery(search_papers);
+
+	  queryresult.then((res) => {
+	      //console.log("myamazing results: "+JSON.stringify(res));
+	      let sometheadvisorids = [];
+
+	      for (let idx in res) {
+		  sometheadvisorids.push(res[idx][0]) }
+
+	      const before = Date.now();
+	      let promise_of_papers = fetchAllTheAdvisor(sometheadvisorids);
+	      promise_of_papers.then((results) => {
+		  const after = Date.now();
+		  console.log(after - before + " ms");
+		  //console.log(results);
+
+		  const result_dict = theadvisor_array_to_dict(results);
+		  for (const pap_id of sometheadvisorids) {
+		      const paper = result_dict[pap_id];
+		      render_theadvisor_papers(document.getElementById("resultlist"), [paper], true);		      
+		  }
+		  
+
+	      }) .catch(error => {
+		  mylocallog(error);
+	      });
+	  });
+	  
+      }
+
+	window.addEventListener('load', ()=> { try { update_view(); }
+		    catch (error) { //ignore error mylocallog(error);
+		    }
+
+	});
+      
+    </script>
+  </body>
+</html>

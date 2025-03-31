@@ -60,4 +60,15 @@ You upload the mag references with `MAG_References_to_mongo.py`; that takes some
 
 At some point we need to create indexes on all these mongo collections becasue the query time are stupid otherwise
 
-also once the SQL stuff is done, one could flush teh sql database
+also once the SQL stuff is done, one could flush the sql database
+
+## build theadvisor dataset
+
+Finally the script in `web/matching.py` puts everything together
+It puts the theadvisor dataset together by build a graph of the matching between the different datasets.
+It extracts connected components to identify each theadvisor paper individually.
+Then it builds two collections:
+-a reverse index `theadvisor_reverse` that serves to find from a particular MAG, Citeseer, or DBLP paper what its theadvisorid is
+-a database of papers `theadvisor_papers` that stores all meta data on a theadvisor paper: title, authors, year, which MAG, Citeseer, or DBLP paper it is, and citation information split in citers and citee
+
+This process is slow and memory hungry. It will run about 16 hours. And can take 15GB of memory.
