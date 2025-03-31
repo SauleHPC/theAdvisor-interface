@@ -5,16 +5,29 @@
   -construct theadvisor
   -back end
 
-2. matching should prevent duplicate match in theadvisor id
-
 3. think about best place to index
-
-4. split routes in back end in different files for basic fetch and more advanced features
+  - what does that mean?
 
 5. API documentation
+  -hell yes!
+  -also testing!
 
 6. using citeseer data for citation
 
-7. importing DBLP better to get nicer meta data
-
 8. in backend, decide what to do on "not found"
+  - Probably should move to a proper "result" object
+
+9. In javascript code, redo the range loop with for (const v of col)
+
+10. Enabling file to encode matchings that AREN'T true
+  - probably should be used when theadvisor papers get created to make it safer
+
+11. optimize making theadvisor papers
+  - In particular, reducing making individual queries; for instance in citer/citee build logic
+
+12. string matching code should really be able to take existing matches to skip entries we have already matched.
+  - there is some logic in theres quite strange.
+
+13. improve matchign code.
+  - currently matchign code is ONLY using title to string match.
+  - when there are many great matches, we probably should look for other attribute for matching (for instance year)
