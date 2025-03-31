@@ -14,7 +14,7 @@
     <div id="resultlist"></div>
     <script type="module">
       import { fetchDBLP, fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc} from "./fetcher.js"
-      import { mylocallog,  render_theadvisor_papers } from "./util.js";
+      import { mylocallog,  render_theadvisor_papers, theadvisor_array_to_dict } from "./util.js";
       import { recommendationQuery } from "./recommendation.js";
 
       function update_view() {
@@ -56,8 +56,14 @@
 		  const after = Date.now();
 		  console.log(after - before + " ms");
 		  //console.log(results);
+
+		  const result_dict = theadvisor_array_to_dict(results);
+		  for (const pap_id of sometheadvisorids) {
+		      const paper = result_dict[pap_id];
+		      render_theadvisor_papers(document.getElementById("resultlist"), [paper], true);		      
+		  }
 		  
-		  render_theadvisor_papers(document.getElementById("resultlist"), results, true);
+
 	      }) .catch(error => {
 		  mylocallog(error);
 	      });

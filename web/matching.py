@@ -184,6 +184,12 @@ def populate_the_advisor_paper(graph, ret):
         if p['src'] == 'Citeseer':
             found_citeseer = p['id']
 
+    #prepopulating for consistency
+    ret ['title'] = ""
+    ret ['doi'] = ""
+    ret ['year'] = 0
+    ret ['authors'] = []
+    
     #taking meta data from DBLP first
     if found_dblp:
         dblppaper = db.Original_DBLP.find_one({'paper_id': found_dblp})

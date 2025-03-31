@@ -178,3 +178,13 @@ export function render_theadvisor_papers(domelem, papers, investigatelink = fals
     
 }
 
+export function theadvisor_array_to_dict(papers) {
+    let dict = {}
+    for (const paper of papers) {
+	if (paper === null) // some query features may add nulls
+	    continue;
+	dict[paper.theadvisor_id] = paper
+    }
+    console.log(JSON.stringify(dict));
+    return dict;
+}

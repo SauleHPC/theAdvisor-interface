@@ -93,7 +93,7 @@ export async function fetchTheAdvisorArray(theadvisorids) {
 	.catch(error => {
 	    let deb = document.getElementById("debuginfo");
 	    let r = document.createElement("p")
-	    r.textContent="Could not fetch theadvisor for "+theadvisorid;
+	    r.textContent="Could not fetch theadvisor for "+theadvisorids;
 	    deb.appendChild(r);
 	    return Promise.reject(error);
 	})

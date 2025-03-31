@@ -13,14 +13,20 @@ fetchers = Blueprint('fetcherssomething', __name__)
 
 #somehow there are nans that show up in DOIs
 def normalize_advisor_objects(adv):
-    if isinstance(adv['doi'], Number) and math.isnan(adv['doi']):
-        adv['doi']=""
+    try:
+        if isinstance(adv['doi'], Number) and math.isnan(adv['doi']):
+            adv['doi']=""
+    except:
+        pass #weird formats should not die in here
     return adv
     
 #somehow there are nans that show up in DOIs
 def normalize_MAG_objects(magp):
-    if isinstance(magp['DOI'], Number) and math.isnan(magp['DOI']):
-        magp['DOI']=""
+    try:
+        if isinstance(magp['DOI'], Number) and math.isnan(magp['DOI']):
+            magp['DOI']=""
+    except:
+        pass #weird formats should not die in here
     return magp
 
 @fetchers.route("/api/v1/fetch/MAG/<int:magid>")
@@ -87,7 +93,7 @@ def get_citeseer_by_clusterdoc(cluster_id):
 @fetchers.route("/api/v1/fetch/theAdvisor/<int:adv_id>")
 def get_theadvisor_doc(adv_id):
     theAdv_obj = theAdvisor_collection.find_one({"theadvisor_id": adv_id})
-    #print (theAdv_obj)
+    print (theAdv_obj)
     if theAdv_obj is None:
         return {}
     return normalize_advisor_objects(obj_from_bson(theAdv_obj))
