@@ -138,7 +138,14 @@ def get_theadvisor_by_explicitsrc_array():
     print(query)
     query = query["query"]
     ret = []
+
+    advids = []
     for q in query:
-        ob = get_theadvisorobj_by_src({'src':q['src'], 'id': q['id']})
-        ret.append(ob)
+        match = theAdvisor_reverseindex.find_one({'src':q['src'], 'id':q['id']})
+        if match is not None:
+            advids.append(match['theadvisor_id'])
+
+    for advp in theAdvisor_collection.find({"theadvisor_id": {"$in":advids}}):
+        ret.append(normalize_advisor_objects(obj_from_bson(advp)))
+
     return ret
