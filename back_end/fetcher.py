@@ -5,11 +5,18 @@ import json
 from bson import json_util
 from config import MAG_collection, DBLP_collection, Citeseer_papers_collection, Citeseer_authors_collection, Citeseer_citations_collection, theAdvisor_collection, theAdvisor_reverseindex
 from util import exclude_fields, obj_from_bson
-
+from numbers import Number
+import math
 
 fetchers = Blueprint('fetcherssomething', __name__)
 
 
+#somehow there are nans that show up in DOIs
+def normalize_advisor_objects(adv):
+    if isinstance(adv['doi'], Number) and math.isnan(adv['doi']):
+        adv['doi']=""
+    return adv
+    
 
 @fetchers.route("/api/v1/fetch/MAG/<int:magid>")
 def get_mag_doc(magid):
@@ -78,7 +85,7 @@ def get_theadvisor_doc(adv_id):
     #print (theAdv_obj)
     if theAdv_obj is None:
         return {}
-    return obj_from_bson(theAdv_obj)
+    return normalize_advisor_objects(obj_from_bson(theAdv_obj))
 
 @fetchers.route("/api/v1/fetch/theAdvisor_array", methods=['POST'])
 def get_theadvisor_array():
@@ -90,7 +97,7 @@ def get_theadvisor_array():
     ret = []
     
     for advp in theAdvisor_collection.find({"theadvisor_id": {"$in":query}}):
-        ret.append(obj_from_bson(advp))
+        ret.append(normalize_advisor_objects(obj_from_bson(advp)))
     
     return ret
 
@@ -123,3 +130,15 @@ def get_theadvisor_by_explicitsrc():
     query = request.get_json(force=True)
     print(query)
     return get_theadvisorobj_by_src({'src':query['src'], 'id': query['id']})
+
+@fetchers.route("/api/v1/fetch/theAdvisor_bysrc_array", methods=['POST'])
+def get_theadvisor_by_explicitsrc_array():
+    #This is done to santize input from user
+    query = request.get_json(force=True)
+    print(query)
+    query = query["query"]
+    ret = []
+    for q in query:
+        ob = get_theadvisorobj_by_src({'src':q['src'], 'id': q['id']})
+        ret.append(ob)
+    return ret
