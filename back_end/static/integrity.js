@@ -17,7 +17,7 @@ export async function get_multiple_mag() {
 	    return Promise.reject(error);
 	})
 	.then(text =>{
-	    //console.log(dblpid+" "+text);
+	    console.log(" "+text);
 	    try {
 		const obj = JSON.parse(text);
 		return obj;
