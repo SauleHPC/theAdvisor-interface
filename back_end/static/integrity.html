@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script type="importmap">
+      { "imports": { "util": "./util.js" } }
+    </script>
+  </head>
+  <body>
+    <h1>Investigation Zone</h1>
+    <div id="debuginfo"></div> <!-- display:none in css-->
+    <h2>Info</h2>
+    <div id="paperinfo"></div>
+    <script type="module">
+      import { fetchTheAdvisor, fetchAllTheAdvisor, fetchTheAdvisorBySrc, fetchAllTheAdvisorBySrc, fetchDBLP, fetchMAG} from "./fetcher.js"
+      import { mylocallog, render_theadvisor_papers, render_dblp_papers, render_mag_papers} from "./util.js";
+      import { get_multiple_mag} from "./integrity.js";
+
+      function update_view() {
+	  const paramsString = window.location.search;
+	  const searchParams = new URLSearchParams(paramsString);
+
+	  //console.log(id);
+	  
+	  let p = get_multiple_mag();
+	  p.then((theadvisor_papers) => {
+	      console.log(theadvisor_papers);
+	      let citers = fetchAllTheAdvisor(theadvisor_papers)
+
+	      citers
+		  .then((results) => {
+		      render_theadvisor_papers(document.getElementById("paperinfo"),
+					       results, true);
+		  }) .catch(error => {
+		      mylocallog(error);
+		  });
+	  });
+      }
+
+	window.addEventListener('load', ()=> { try { update_view(); }
+		    catch (error) { //ignore error mylocallog(error);
+		    }
+
+	});
+      
+    </script>
+  </body>
+</html>
